@@ -18,7 +18,7 @@ public:
 	APlayerCharacter();
 	~APlayerCharacter();
 
-	FORCEINLINE void Push(Element e) // Compiler optimization: Copy elision.
+	FORCEINLINE void Push(CElement e) // Compiler optimization: Copy elision.
 	{ 
 
 		if (index == 3)
@@ -60,6 +60,6 @@ public:
 
 private:
 
-	Element* stack = nullptr;
+	CElement* stack = nullptr;
 	int index = 0;
 };

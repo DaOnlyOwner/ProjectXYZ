@@ -5,27 +5,70 @@
 
 #pragma once
 
+/*
+Class defining the elements.
+*/
 
-/**
- * 
- */
-class PROJECTXYZ_API Element
+
+class PROJECTXYZ_API CElement
 {
+
 public:
-	Element();
-	Element(char,char,int);
+	CElement();
+	CElement(char,char,int);
 	
-	FORCEINLINE char getOppositeName()
+	inline char getOppositeName() const
 	{
 		return oppositeName;
 	}
 
-	FORCEINLINE char getName()
+	inline char getName() const
 	{
 		return name;
 	}
 
-	~Element();
+	inline int getRank() const
+	{
+		return rank;
+	}
+
+	/*
+	@return the CElement steam with name=T, rank=3
+	*/
+	inline static CElement getSteam()
+	{
+		CElement out('X', 'T', 3);
+		return out;
+	}
+
+	/*
+	@return the CElement ice with name=I, rank=8
+	*/
+	inline static CElement getIce()
+	{
+		CElement out('X', 'I', 8);
+		return out; 
+	}
+
+	inline bool operator==(char c ) const 
+	{
+		return c == name;
+	}
+
+	inline bool operator<(const CElement& other) const
+	{
+		return other.getRank() < rank;
+	}
+
+	inline CElement& operator=(const CElement& other)
+	{
+		oppositeName = other.getOppositeName();
+		name = other.getName();
+		rank = other.getRank();
+		return *this;
+	}
+
+	~CElement();
 
 private:
 	

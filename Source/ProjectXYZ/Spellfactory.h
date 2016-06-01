@@ -25,7 +25,7 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 private:
-	TMap<FString, ASpell> normalDict;
-	TMap<FString, ASpell> eSpellDict; 
-	ASpell genSpell(FString);
+	TMap<FString, TSubclassOf<ASpell>> normalDict;
+	TMap<FString, TSubclassOf<ASpell>> eDict; 
+	ASpell* ASpellfactory::genSpell(TArray<CElement>& queue, char selfcast, const FVector& location);
 };

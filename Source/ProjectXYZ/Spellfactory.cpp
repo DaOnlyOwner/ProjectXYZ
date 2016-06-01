@@ -25,21 +25,55 @@ void ASpellfactory::Tick( float DeltaTime )
 
 }
 
-ASpell ASpellfactory::genSpell(TArray<Element> queue)
+ASpell* ASpellfactory::genSpell(TArray<CElement>& queue, char selfcast, const FVector& location) 
 {
-	bool isF;
-	bool isQ;
-	bool isR;
 
-	int index = queue.IndexOfByKey<char>('Q');
-	if (index != INDEX_NONE)
+	//Replace
+	int32 indexQ = queue.IndexOfByKey<char>('Q');
+	if (indexQ != INDEX_NONE)
 	{
-		
+		int32 indexF = queue.IndexOfByKey<char>('F');
+		if(indexF!=INDEX_NONE)
+		{
+			queue.RemoveAtSwap(indexF);
+			queue.RemoveAtSwap(indexQ);
+			queue.Add(CElement::getSteam());
+		}
+
+		else
+		{
+			int32 indexR = queue.IndexOfByKey('R');
+			if (indexR != INDEX_NONE)
+			{
+				queue.RemoveAtSwap(indexR);
+				queue.RemoveAtSwap(indexQ);
+				queue.Add(CElement::getIce());
+			}
+		}
+
 	}
 
 	//Sort
 	queue.Sort();
+	FString lookupstring;
+	lookupstring.AppendChar(selfcast);
+	int count = queue.Num();
 
+	for (int i = 0; i < count;i++ )
+	{
+		lookupstring += queue[i].getName();
+	}
+	
+		
+	if (queue.FindByKey<char>('E') != nullptr)
+	{
+		
+		return static_cast<ASpell*>(GetWorld()->SpawnActor(*eDict[lookupstring], &location));
+
+	}
+
+	return static_cast<ASpell*>(GetWorld()->SpawnActor(*normalDict[lookupstring], &location));
+	
 
 }
 
