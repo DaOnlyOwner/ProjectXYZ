@@ -16,6 +16,8 @@
 *.dylib
 *.dll
 
+Content/StarterContent/*
+
 # Fortran module files
 *.mod
 
@@ -37,7 +39,7 @@
 *.suo
 *.opensdf
 *.sdf
-*.VC.opendb
+*.VC.db
 
 # Precompiled Assets
 SourceArt/**/*.png

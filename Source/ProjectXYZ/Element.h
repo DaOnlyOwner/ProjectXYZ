@@ -15,11 +15,25 @@ class PROJECTXYZ_API CElement
 
 public:
 	CElement();
-	CElement(char,char,int);
+	CElement(char name_ ,char canceledBy_ , char canceledBy2_, int rank_ );
 	
-	inline char getOppositeName() const
+	/*
+	@return first opposite element.
+	@example q cancels a
+	*/
+	inline char getCanceledBy() const //q cancels a
 	{
-		return oppositeName;
+		return canceledBy;
+	}
+
+
+	/*
+	@return second opposite element.
+	@example d cancels a
+	*/
+	inline char getCanceledBy2() const //d cancels a
+	{
+		return canceledBy2;
 	}
 
 	inline char getName() const
@@ -32,12 +46,19 @@ public:
 		return rank;
 	}
 
+
+	/*
+	*
+	* --------------------- Begin ACCESSORS FOR ELEMENTS ---------------------
+	*
+	*/
+
 	/*
 	@return the CElement steam with name=T, rank=3
 	*/
 	inline static CElement getSteam()
 	{
-		CElement out('X', 'T', 3);
+		CElement out('T', 'X', 'X', 4);
 		return out;
 	}
 
@@ -46,9 +67,93 @@ public:
 	*/
 	inline static CElement getIce()
 	{
-		CElement out('X', 'I', 8);
+		CElement out('I','X', 'X', 7);
 		return out; 
 	}
+
+	/*
+	@return the CElement water with name=Q, rank=1
+	*/
+	inline static CElement getWater()
+	{
+		CElement out('Q', 'A', 'D', 1);
+		return out;
+	}
+
+	/*
+	@return the CElement fire with name=F, rank=2
+	*/
+	inline static CElement getFire()
+	{
+		CElement out('F', 'R','X', 2);
+		return out;
+	}
+
+	/*
+	@return the CElement cold with name=R, rank=3
+	*/
+	inline static CElement getCold()
+	{
+		CElement out('R', 'F', 'X', 3);
+		return out;
+	}
+
+	/*
+	@return the CElement life with name=W, rank=5
+	*/
+	inline static CElement getLife()
+	{
+		CElement out('W', 'S','X', 5);
+		return out;
+	}
+
+	/*
+	@return the CElement death with name=S, rank=6
+	*/
+	inline static CElement getDeath()
+	{
+		CElement out('S', 'W', 'X', 6);
+		return out;
+	}
+
+
+	/*
+	@return the CElement lightning with name=A, rank=8
+	*/
+	inline static CElement getLightning()
+	{
+		CElement out('A', 'D', 'Q', 8);
+		return out;
+	}
+
+
+	/*
+	@return the CElement earth with name=D, rank=10
+	*/
+	inline static CElement getEarth()
+	{
+		CElement out('D', 'A', 'X', 10);
+		return out;
+	}
+
+
+	/*
+	@return the CElement shield with name=E, rank=11
+	*/
+	inline static CElement getShield()
+	{
+		CElement out('E', 'E', 'X', 11);
+		return out;
+
+
+
+	}
+
+/*
+*
+* --------------------- END ACCESSORS FOR ELEMENTS ---------------------
+*
+*/
 
 	inline bool operator==(char c ) const 
 	{
@@ -62,7 +167,8 @@ public:
 
 	inline CElement& operator=(const CElement& other)
 	{
-		oppositeName = other.getOppositeName();
+		canceledBy = other.getCanceledBy();
+		canceledBy2 = other.getCanceledBy2();
 		name = other.getName();
 		rank = other.getRank();
 		return *this;
@@ -72,7 +178,8 @@ public:
 
 private:
 	
-	char oppositeName;
+	char canceledBy;
+	char canceledBy2;
 	char name;
 	int rank;
 

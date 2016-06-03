@@ -7,11 +7,12 @@
 CElement::CElement()
 {
 	name = 0;
-	oppositeName = 0;
+	canceledBy = 0;
+	canceledBy2 = 0;
 	rank = 0;
 }
 
-CElement::CElement(char name_, char oppositeName_, int rank_):name(name_),oppositeName(oppositeName_),rank(rank_)
+CElement::CElement(char name_, char canceledBy_, char canceledBy2_, int rank_):name(name_),canceledBy(canceledBy_), canceledBy2(canceledBy2_), rank(rank_)
 {
 
 }
