@@ -21,9 +21,9 @@ public:
 	@return first opposite element.
 	@example q cancels a
 	*/
-	inline char getCanceledBy() const //q cancels a
+	inline char getCancelledBy() const //q cancels a
 	{
-		return canceledBy;
+		return cancelledBy;
 	}
 
 
@@ -31,9 +31,9 @@ public:
 	@return second opposite element.
 	@example d cancels a
 	*/
-	inline char getCanceledBy2() const //d cancels a
+	inline char getCancelledBy2() const //d cancels a
 	{
-		return canceledBy2;
+		return cancelledBy2;
 	}
 
 	inline char getName() const
@@ -167,8 +167,8 @@ public:
 
 	inline CElement& operator=(const CElement& other)
 	{
-		canceledBy = other.getCanceledBy();
-		canceledBy2 = other.getCanceledBy2();
+		cancelledBy = other.getCancelledBy();
+		cancelledBy2 = other.getCancelledBy2();
 		name = other.getName();
 		rank = other.getRank();
 		return *this;
@@ -178,8 +178,8 @@ public:
 
 private:
 	
-	char canceledBy;
-	char canceledBy2;
+	char cancelledBy;
+	char cancelledBy2;
 	char name;
 	int rank;
 

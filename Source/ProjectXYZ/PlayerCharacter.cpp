@@ -31,6 +31,23 @@ void APlayerCharacter::Tick( float DeltaTime )
 
 }
 
+void APlayerCharacter::ReleaseSpellForward()
+{
+	TArray<CElement> in;
+	for (int i = 0; i < index; i++)
+	{
+		in.Add(stack[i]);
+	}
+
+	ASpell* spell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(in, false, GetActorLocation());
+
+	
+}
+
+void APlayerCharacter::ReleaseSpellSelf()
+{
+}
+
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {

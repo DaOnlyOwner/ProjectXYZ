@@ -1,31 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectXYZ.h"
-#include "Spellfactory.h"
+#include "CustomGameState.h"
 
-// Sets default values
-ASpellfactory::ASpellfactory()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
 
-}
-
-// Called when the game starts or when spawned
-void ASpellfactory::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ASpellfactory::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-
-}
-
-ASpell* ASpellfactory::genSpell(TArray<CElement>& queue, char selfcast, const FVector& location) 
+ASpell* ACustomGameState::genSpell(TArray<CElement>& queue, bool selfcast, const FVector& location)
 {
 
 	//Replace
@@ -33,7 +12,7 @@ ASpell* ASpellfactory::genSpell(TArray<CElement>& queue, char selfcast, const FV
 	if (indexQ != INDEX_NONE)
 	{
 		int32 indexF = queue.IndexOfByKey<char>('F');
-		if(indexF!=INDEX_NONE)
+		if (indexF != INDEX_NONE)
 		{
 			queue.RemoveAtSwap(indexF);
 			queue.RemoveAtSwap(indexQ);
@@ -55,25 +34,21 @@ ASpell* ASpellfactory::genSpell(TArray<CElement>& queue, char selfcast, const FV
 
 	//Sort
 	queue.Sort();
-	FString lookupstring;
-	lookupstring.AppendChar(selfcast);
+	FString lookupstring = selfcast ? "!" : "";
 	int count = queue.Num();
-
-	for (int i = 0; i < count;i++ )
+	
+	for (int i = 0; i < count; i++)
 	{
 		lookupstring += queue[i].getName();
 	}
-	
-		
+
 	if (queue.FindByKey<char>('E') != nullptr)
 	{
-		
 		return static_cast<ASpell*>(GetWorld()->SpawnActor(*eDict[lookupstring], &location));
-
 	}
 
 	return static_cast<ASpell*>(GetWorld()->SpawnActor(*normalDict[lookupstring], &location));
-	
+
 
 }
 

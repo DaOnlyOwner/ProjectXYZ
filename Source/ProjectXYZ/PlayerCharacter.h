@@ -4,6 +4,7 @@
 
 #include "Element.h"
 #include "Array.h"
+#include "CustomGameState.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -18,15 +19,19 @@ public:
 	APlayerCharacter();
 	~APlayerCharacter();
 
+	void ReleaseSpellForward();
+	void ReleaseSpellSelf();
+
+
 	FORCEINLINE void Push(CElement e) // TODO: Better move this into .cpp
 	{ 
 
 		for (int i = 0; i < index; i++)
 		{
-			char canceling1 = e.getCanceledBy();
-			char canceling2 = e.getCanceledBy2();
+			char cancelling1 = e.getCancelledBy();
+			char cancelling2 = e.getCancelledBy2();
 
-			if (stack[i] == canceling1 || stack[i] == canceling2) 
+			if (stack[i] == cancelling1 || stack[i] == cancelling2) 
 			{
 				// Remove stack[i] and resize, looks like O(n^2), however its actually O(n+n) = O(n)
 				// because we only evaluate the for loop once. 
@@ -41,7 +46,7 @@ public:
 			}
 		}
 
-		if (index == 3)
+		if (index == 2)
 		{
 			return; // Not more than 3 elements at once.
 		}

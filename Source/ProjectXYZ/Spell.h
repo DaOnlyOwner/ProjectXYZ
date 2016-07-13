@@ -19,6 +19,8 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
+	
+	// Advance this if you need.
 	virtual void StartBehavior();
 	virtual void EndBehavior();	
 };
