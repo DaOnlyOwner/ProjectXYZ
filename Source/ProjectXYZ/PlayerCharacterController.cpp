@@ -5,25 +5,36 @@
 
 APlayerCharacterController::APlayerCharacterController()
 {
-		PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	bAllowTickBeforeBeginPlay = false;
+	PrimaryActorTick.bTickEvenWhenPaused = true;
+	PrimaryActorTick.TickGroup = TG_PrePhysics;
+}
+
+void APlayerCharacterController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	InputComponent->BindAxis("SetWaypoint", this, &APlayerCharacterController::setWaypoint);
+	InputComponent->BindAction("ForwardCast", IE_Pressed, this, &APlayerCharacterController::ForwardCast);
 }
 
 void APlayerCharacterController::BeginPlay()
 {
-	
+	Super::BeginPlay();
 	actor = static_cast<APlayerCharacter*>(this->GetCharacter()); // Later: dynamic cast
 
-	movementVector = FVector(0, 0, 0);
-	waypoint = FVector(0, 0, 0);
+	MovementVector = FVector(0, 0, 0);
+	Waypoint = FVector(0, 0, 0);
 
 }
 
-void APlayerCharacterController::ForwardCast() const
+void APlayerCharacterController::ForwardCast()
 {
 	actor->ReleaseSpellForward();
 }
 
-void APlayerCharacterController::SelfCast() const
+void APlayerCharacterController::SelfCast()
 {
 	actor->ReleaseSpellSelf();
 }
@@ -31,69 +42,90 @@ void APlayerCharacterController::SelfCast() const
 //This is just dirty
 void APlayerCharacterController::Tick(float DeltaSeconds)
 {
-	if (WasInputKeyJustPressed(EKeys::Q))
+	if (actor != nullptr)
 	{
-		actor->Push(CElement::getWater());
-	}
-	else if (WasInputKeyJustPressed(EKeys::W))
-	{
-		actor->Push(CElement::getLife());
-	}
-	else if (WasInputKeyJustPressed(EKeys::E))
-	{
-		actor->Push(CElement::getShield());
-	}
-	else if (WasInputKeyJustPressed(EKeys::R))
-	{
-		actor->Push(CElement::getCold());
-	}
-	else if (WasInputKeyJustPressed(EKeys::A))
-	{
-		actor->Push(CElement::getLightning());
-	}
-	else if (WasInputKeyJustPressed(EKeys::S))
-	{
-		actor->Push(CElement::getDeath());
-	}
-	else if (WasInputKeyJustPressed(EKeys::D))
-	{
-		actor->Push(CElement::getEarth());
-	}
-	else if (WasInputKeyJustPressed(EKeys::F))
-	{
-		actor->Push(CElement::getFire());
-	}
+		MoveToWaypoint();
+		TurnToWaypoint(DeltaSeconds);
 
-
+		if (WasInputKeyJustPressed(EKeys::Q))
+		{
+			CElement element = CElement::getWater();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::W))
+		{
+			CElement element = CElement::getLife();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::E))
+		{
+			CElement element = CElement::getShield();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::R))
+		{
+			CElement element = CElement::getCold();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::A))
+		{
+			CElement element = CElement::getLightning();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::S))
+		{
+			CElement element = CElement::getDeath();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::D))
+		{
+			CElement element = CElement::getEarth();
+			actor->Push(element);
+		}
+		if (WasInputKeyJustPressed(EKeys::F))
+		{
+			CElement element = CElement::getFire();
+			actor->Push(element);
+		}
+	}
 
 
 }
+
+
+
 void APlayerCharacterController::MoveToWaypoint()
 {
 	FVector location(actor->GetActorLocation());
-
-	if ((waypoint - location).SizeSquared() >= range)
+	if ((Waypoint - location).SizeSquared() >= Range)
 	{
-		FVector direction = (waypoint - location);
-		actor->AddMovementInput(movementVector);
+		FVector direction = (Waypoint - location);
+		actor->AddMovementInput(MovementVector);
 
 	}
 
 }
 
-void APlayerCharacterController::TurnToPoint(const FVector & point, float deltaTime)
+void APlayerCharacterController::TurnToWaypoint(float deltaTime)
 {
-	FRotator rotator = UKismetMathLibrary::FindLookAtRotation(actor->GetActorLocation(), point);
-	rotator = FMath::RInterpTo(actor->GetActorRotation(), rotator, deltaTime, turnSpeed);
+	FHitResult result;
+	GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, result);
+	FRotator rotator = UKismetMathLibrary::FindLookAtRotation(actor->GetActorLocation(), result.ImpactPoint);
+	rotator = FMath::RInterpTo(actor->GetActorRotation(), rotator, deltaTime, TurnSpeed);
 	SetControlRotation(rotator);
 }
 
-void APlayerCharacterController::CustomSetWaypoint(const FVector & waypoint)
+void APlayerCharacterController::setWaypoint(float AxisValue)
 {
-	this->waypoint = waypoint;
+	if (actor != nullptr && AxisValue > 0)
+	{
+		FHitResult result;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, result);
+		Waypoint = FVector(result.ImpactPoint);
 
-	movementVector = (waypoint - actor->GetActorLocation());
-	if (movementVector.Normalize());
-	else movementVector = FVector{};
+		MovementVector = (Waypoint - actor->GetActorLocation());
+		if (MovementVector.Normalize());
+		else MovementVector = FVector{};
+	}
 
 }

@@ -34,3 +34,12 @@ void ASpell::EndBehavior()
 {
 }
 
+// May only be called twice!
+void ASpell::PushAdditionalElement(CElement& element)
+{
+	additionalElements[index] = element;
+	index++;
+}
+
+
+

@@ -20,22 +20,40 @@ public:
 	APlayerCharacterController();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void SelfCast() const;
-	void MoveToWaypoint();
-	void TurnToPoint(const FVector & point, float deltaTime);
-	void CustomSetWaypoint(const FVector & waypoint);
-	void ForwardCast() const;
+	void SelfCast(); // May not be const
+	void ForwardCast(); // May not be const
 
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
-	// Called to bind functionality to input
+
+	void SetupInputComponent() override;
+
+	UFUNCTION(BlueprintCallable, Category = "MoveFunctions")
+		void TurnToWaypoint(float deltaTime);
+
+	UFUNCTION(BlueprintCallable, Category = "MoveFunctions")
+		void MoveToWaypoint();
+
+
+	UPROPERTY(EditAnywhere)
+		float Range = 10;
+
+	UPROPERTY(BlueprintReadOnly)
+		FVector Waypoint;
+
+
+	UPROPERTY(EditAnywhere)
+		float TurnSpeed = 4.5f;
+
+	UPROPERTY(EditAnywhere)
+		float MovementSpeed = 1.0f;
+
+	UPROPERTY(BlueprintReadOnly)
+		FVector MovementVector;
+
+
 
 private:
 	APlayerCharacter* actor;
-	FVector movementVector;
-	FVector waypoint;
-	float range = 10;
-	float turnSpeed = 4.5f;
-	float movementSpeed = 1.0f;
-	
+	void setWaypoint(float AxisValue);
 };

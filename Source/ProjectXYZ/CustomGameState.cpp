@@ -3,7 +3,7 @@
 #include "ProjectXYZ.h"
 #include "CustomGameState.h"
 
-
+// I might replace that with a better working solution. Right now its just too ugly
 ASpell* ACustomGameState::genSpell(TArray<CElement>& queue, bool selfcast, const FVector& location)
 {
 
@@ -35,20 +35,32 @@ ASpell* ACustomGameState::genSpell(TArray<CElement>& queue, bool selfcast, const
 	//Sort
 	queue.Sort();
 	FString lookupstring = selfcast ? "!" : "";
-	int count = queue.Num();
-	
-	for (int i = 0; i < count; i++)
+	if (queue[0].getName() == 'E')
 	{
-		lookupstring += queue[i].getName();
+		lookupstring += 'E'; 
+		if (queue.Num() > 1)
+		{
+			lookupstring += queue[1].getName();
+		}
+		/*ASpell* out = static_cast<ASpell*>(GetWorld()->SpawnActor(*eDict[lookupstring], &location));
+		for (int i = 1; i < queue.Num(); i++)
+		{
+			out->PushAdditionalElement(queue[i]);
+		}*/
 	}
 
-	if (queue.FindByKey<char>('E') != nullptr)
+	else
 	{
-		return static_cast<ASpell*>(GetWorld()->SpawnActor(*eDict[lookupstring], &location));
+		lookupstring += queue[0].getName();
+		/*ASpell* out =  static_cast<ASpell*>(GetWorld()->SpawnActor(*normalDict[lookupstring], &location));
+		for (int i = 0; i < queue.Num(); i++)
+		{
+			out->PushAdditionalElement(queue[i]);
+		}*/
 	}
 
-	return static_cast<ASpell*>(GetWorld()->SpawnActor(*normalDict[lookupstring], &location));
-
-
+	UE_LOG(LogTemp, Warning, TEXT("Final output for search: %s"), *lookupstring);
+	return nullptr;
+	//return out;
 }
 

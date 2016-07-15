@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Element.h"
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
 
@@ -22,5 +23,12 @@ public:
 	
 	// Advance this if you need.
 	virtual void StartBehavior();
-	virtual void EndBehavior();	
+	virtual void EndBehavior();
+	
+	void PushAdditionalElement(CElement& element);
+
+private:
+	CElement additionalElements[2];
+	short index = 0;
+
 };

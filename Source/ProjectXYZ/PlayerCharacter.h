@@ -19,41 +19,12 @@ public:
 	APlayerCharacter();
 	~APlayerCharacter();
 
+	void moveCamera(float DeltaSeconds);
 	void ReleaseSpellForward();
 	void ReleaseSpellSelf();
 
 
-	FORCEINLINE void Push(CElement e) // TODO: Better move this into .cpp
-	{ 
-
-		for (int i = 0; i < index; i++)
-		{
-			char cancelling1 = e.getCancelledBy();
-			char cancelling2 = e.getCancelledBy2();
-
-			if (stack[i] == cancelling1 || stack[i] == cancelling2) 
-			{
-				// Remove stack[i] and resize, looks like O(n^2), however its actually O(n+n) = O(n)
-				// because we only evaluate the for loop once. 
-				for (int k = i; k < index-1; k++)
-				{
-					stack[k] = stack[k + 1];
-				}
-				index--;
-				return; // One element can only remove one element from the Q.
-				//TODO: Function to inform that element was removed
-			
-			}
-		}
-
-		if (index == 2)
-		{
-			return; // Not more than 3 elements at once.
-		}
-
-		stack[index] = e;
-		index++;
-	}	
+	void Push(CElement e);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,10 +35,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+
+	UPROPERTY(EditAnywhere)
+		USceneComponent* camera;
+
+	UPROPERTY(EditAnywhere)
+		float SmoothingTime = 4.5f;
+
+	UPROPERTY(EditAnywhere)
+		float ScreenScale = 1000.0f;
+
 	
 
 private:
 
 	CElement* stack = nullptr;
+	FVector startOffset;
 	int index = 0;
 };
