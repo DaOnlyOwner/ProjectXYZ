@@ -12,44 +12,46 @@ class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement();
 	CElement(char name_ ,char canceledBy_ , char canceledBy2_, int rank_ );
 
 	/*
 	@return first opposite element.
 	@example q cancels a
 	*/
-	inline char getCancelledBy() const //q cancels a
+	inline char GetCancelledBy() const //q cancels a
 	{
 		return cancelledBy;
 	}
-
 
 	/*
 	@return second opposite element.
 	@example d cancels a
 	*/
-	inline char getCancelledBy2() const //d cancels a
+	inline char GetCancelledBy2() const //d cancels a
 	{
 		return cancelledBy2;
 	}
 
-	inline char getName() const
+	inline char GetName() const
 	{
 		return name;
 	}
 
-	inline int getRank() const
+	inline int GetRank() const
 	{
 		return rank;
 	}
 
-	bool cancels(CElement &el)
+	bool Cancels(CElement &el)
 	{
-	   return name == el.getCancelledBy() ||
-	     name == el.getCancelledBy2();
+	   return name == el.GetCancelledBy() ||
+	     name == el.GetCancelledBy2();
 	}
 
+	bool isNull()
+	{
+	   return name == 'X';
+	}
 
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
 
@@ -60,17 +62,18 @@ public:
 
 	inline bool operator<(const CElement& other) const
 	{
-		return other.getRank() < rank;
+		return other.GetRank() < rank;
 	}
 
 	~CElement();
 
 private:
-	
+	//don't copy elements
+	CElement (CElement &el) {};
 	char cancelledBy;
 	char cancelledBy2;
 	char name;
 	int rank;
 };
 
-extern CElement steam, ice, water, fire, cold, life, death, lightning, earth, shield;
+extern CElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;

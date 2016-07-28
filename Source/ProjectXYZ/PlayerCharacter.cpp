@@ -14,12 +14,10 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->AttachTo(RootComponent);
-	stack = new CElement[3];
 }
 
 APlayerCharacter::~APlayerCharacter()
 {
-	delete[] stack;
 }
 
 // Called when the game starts or when spawned
@@ -40,9 +38,9 @@ void APlayerCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	FString string;
-	for (int i = 0; i < index; i++)
+	for (int i = 0; i < elementQueueSize; i++)
 	{
-		string += stack[i].getName();
+		string += elementQueue[i]->GetName();
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string,true, FVector2D{ 5,5 });
@@ -54,49 +52,45 @@ void APlayerCharacter::Tick( float DeltaTime )
 
 
 
-void APlayerCharacter::Push(CElement e)
+void APlayerCharacter::AddElementToQueue(CElement &e)
 {
 
 
-	for (int i = 0; i < index; i++)
+	for (int i = 0; i < elementQueueSize; i++)
 	{
-		char cancelling1 = e.getCancelledBy();
-		char cancelling2 = e.getCancelledBy2();
-
-		if (stack[i] == cancelling1 || stack[i] == cancelling2)
+		if (e.Cancels(*elementQueue[i]))
 		{
-			// Remove stack[i] and resize.
-			for (int k = i; k < index - 1; k++)
+			// Remove elementQueue[i] and resize.
+			for (int k = i; k < elementQueueSize - 1; k++)
 			{
-				stack[k] = stack[k + 1];
+				elementQueue[k] = elementQueue[k + 1];
 			}
-			index--;
+			elementQueueSize--;
 			return; // One element can only remove one element from the Q.
 					//TODO: Function to inform that element was removed
 		}
 	}
 
-	if (index == 3)
+	if (elementQueueSize == 3)
 	{
 		return; // Not more than 3 elements at once.
 	}
 
-	stack[index] = e;
-	index++;
+	elementQueue[elementQueueSize] = &e;
+	elementQueueSize++;
 }
-
 
 void APlayerCharacter::ReleaseSpellForward()
 {
-	if (index == 0)
+	if (elementQueueSize == 0)
 	{
 		return;
 	}
 
-	TArray<CElement> in;
-	for (int i = 0; i < index; i++)
+	TArray<CElement *> in;
+	for (int i = 0; i < elementQueueSize; i++)
 	{
-		in.Add(stack[i]);
+		in.Add(elementQueue[i]);
 	}
 
 	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(in, false, *this);
@@ -111,7 +105,7 @@ void APlayerCharacter::ReleaseSpellForward()
 
 	}
 
-	index = 0;
+	elementQueueSize = 0;
 	
 }
 

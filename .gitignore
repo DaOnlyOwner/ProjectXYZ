@@ -74,3 +74,21 @@ ipch/*
 *.swp
 *.swo
 .ctrlp_cache/
+
+# Unreal project stuff
+
+Binaries/*
+CMakeFiles/*
+*.pri
+*.kdev4
+*.pro
+.kdev4/*
+/CMakeCache.txt
+/CMakeLists.txt
+/Makefile
+/ProjectXYZ.workspace
+/ProjectXYZCodeCompletionFolders.txt
+/ProjectXYZCodeLitePreProcessor.txt
+/cmake_install.cmake
+=======
+.ctrlp_cache/
