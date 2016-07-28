@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-
-
 #pragma once
 
 /*
@@ -14,41 +12,50 @@ class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement();
-	CElement(char,char,int);
-	
-	inline char getOppositeName() const
+	CElement(char name_ ,char canceledBy_ , char canceledBy2_, int rank_ );
+
+	/*
+	@return first opposite element.
+	@example q cancels a
+	*/
+	inline char GetCancelledBy() const //q cancels a
 	{
-		return oppositeName;
+		return cancelledBy;
 	}
 
-	inline char getName() const
+
+	/*
+	@return second opposite element.
+	@example d cancels a
+	*/
+	inline char GetCancelledBy2() const //d cancels a
+	{
+		return cancelledBy2;
+	}
+
+	inline char GetName() const
 	{
 		return name;
 	}
 
-	inline int getRank() const
+	inline int GetRank() const
 	{
 		return rank;
 	}
 
-	/*
-	@return the CElement steam with name=T, rank=3
-	*/
-	inline static CElement getSteam()
+	bool Cancels(CElement &el)
 	{
-		CElement out('X', 'T', 3);
-		return out;
+	   return name == el.GetCancelledBy() ||
+	     name == el.GetCancelledBy2();
 	}
 
-	/*
-	@return the CElement ice with name=I, rank=8
-	*/
-	inline static CElement getIce()
+	bool isNull()
 	{
-		CElement out('X', 'I', 8);
-		return out; 
+	   return name == 'X';
 	}
+
+
+	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
 
 	inline bool operator==(char c ) const 
 	{
@@ -57,25 +64,20 @@ public:
 
 	inline bool operator<(const CElement& other) const
 	{
-		return other.getRank() < rank;
-	}
-
-	inline CElement& operator=(const CElement& other)
-	{
-		oppositeName = other.getOppositeName();
-		name = other.getName();
-		rank = other.getRank();
-		return *this;
+		return other.GetRank() < rank;
 	}
 
 	~CElement();
 
 private:
-	
-	char oppositeName;
+
+	//don't copy elements
+	CElement (CElement &el) {};
+
+	char cancelledBy;
+	char cancelledBy2;
 	char name;
 	int rank;
-
-
-
 };
+
+extern CElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;

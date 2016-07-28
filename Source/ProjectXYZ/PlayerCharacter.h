@@ -8,6 +8,8 @@
 #include "PlayerCharacter.generated.h"
 
 
+class ASpell;
+
 UCLASS()
 class PROJECTXYZ_API APlayerCharacter : public ACharacter
 {
@@ -18,34 +20,15 @@ public:
 	APlayerCharacter();
 	~APlayerCharacter();
 
-	FORCEINLINE void Push(CElement e) // Compiler optimization: Copy elision.
-	{ 
+	void moveCamera(float DeltaSeconds);
+	void ReleaseSpellForward();
+	void beginCharge();
+	void endCharge();
+	void ReleaseSpellSelf();
+	void KeyupForward();
 
-		if (index == 3)
-		{
-			return; // Not more than 3 elements at once.
-		}
 
-		for (int i = 0; i < index; i++)
-		{
-			if (stack[i].getOppositeName() == e.getName()) 
-			{
-				// Remove stack[i] and resize, looks like O(n^2), however its actually O(n+n) = O(n)
-				// because we only evaluate the for expression once. 
-				for (int k = i; k < index-1; k++)
-				{
-					stack[k] = stack[k + 1];
-				}
-				index--;
-				break; // One element can only remove one element from the Q.
-				//TODO: Function to inform that element was removed
-			
-			}
-		}
-
-		stack[index] = e;
-		index++;
-	}	
+	void AddElementToQueue(CElement &e);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,10 +39,24 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+	UPROPERTY(EditAnywhere)
+		USceneComponent* camera;
+
+	UPROPERTY(EditAnywhere)
+		float SmoothingTime = 4.5f;
+
+	UPROPERTY(EditAnywhere)
+		float ScreenScale = 1000.0f;
+
+	UPROPERTY(EditAnywhere)
+		float MaxChargeTime = 5.0;
 	
 
 private:
 
-	CElement* stack = nullptr;
-	int index = 0;
+	CElement *elementQueue[3] = {&nullElement, &nullElement, &nullElement};
+	FVector startOffset;
+	ASpell* currentSpell;
+	int elementQueueSize = 0;
+	FTimerHandle chargeHandler;
 };
