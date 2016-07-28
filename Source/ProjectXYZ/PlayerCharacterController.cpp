@@ -55,47 +55,37 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 		if (WasInputKeyJustPressed(EKeys::Q))
 		{
-			CElement element = CElement::getWater();
-			actor->Push(element);
+			actor->Push(water);
 		}
 		if (WasInputKeyJustPressed(EKeys::W))
 		{
-			CElement element = CElement::getLife();
-			actor->Push(element);
+			actor->Push(life);
 		}
 		if (WasInputKeyJustPressed(EKeys::E))
 		{
-			CElement element = CElement::getShield();
-			actor->Push(element);
+			actor->Push(shield);
 		}
 		if (WasInputKeyJustPressed(EKeys::R))
 		{
-			CElement element = CElement::getCold();
-			actor->Push(element);
+			actor->Push(cold);
 		}
 		if (WasInputKeyJustPressed(EKeys::A))
 		{
-			CElement element = CElement::getLightning();
-			actor->Push(element);
+			actor->Push(lightning);
 		}
 		if (WasInputKeyJustPressed(EKeys::S))
 		{
-			CElement element = CElement::getDeath();
-			actor->Push(element);
+			actor->Push(death);
 		}
 		if (WasInputKeyJustPressed(EKeys::D))
 		{
-			CElement element = CElement::getEarth();
-			actor->Push(element);
+			actor->Push(earth);
 		}
 		if (WasInputKeyJustPressed(EKeys::F))
 		{
-			CElement element = CElement::getFire();
-			actor->Push(element);
+			actor->Push(fire);
 		}
 	}
-
-
 }
 
 
