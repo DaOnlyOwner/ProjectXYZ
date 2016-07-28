@@ -3,10 +3,19 @@
 #pragma once
 
 #include "Element.h"
-#include "Core.h"
 #include "Spell.h"
+#include "PlayerCharacter.h"
 #include "GameFramework/GameState.h"
 #include "CustomGameState.generated.h"
+
+
+struct SpellToCaster
+{
+	const UClass* Spellclass; // The referenced object will remain until the end of the game. 
+	CElement additionalElements[2];
+	const int index = 0;
+};
+
 
 /**
  * 
@@ -17,8 +26,26 @@ class PROJECTXYZ_API ACustomGameState : public AGameState
 	GENERATED_BODY()
 
 public:
-	ASpell* ACustomGameState::genSpell(TArray<CElement>& queue, bool selfcast, const FVector& location);
+	//TODO: Edict 
+	void BeginPlay() override
+	{
+		for (int i = 0; i < KeysNormal.Num(); i++)
+		{
+			normalDict.Add(KeysNormal[i], MoveTemp(ValuesNormal[i])); // I am not that familiar with move semantics but I believe that's the way it's done.
+		}
+
+		KeysNormal.Empty();
+		ValuesNormal.Empty();
+
+	};
+
+	ASpell * genSpell(TArray<CElement>& queue, bool selfcast, const APlayerCharacter & player);
 	
+	UPROPERTY(EditAnywhere)
+		TArray<FString> KeysNormal;
+	UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<ASpell>> ValuesNormal;
+
 private:
 	TMap<FString, TSubclassOf<ASpell>> eDict;
 	TMap<FString, TSubclassOf<ASpell>> normalDict;

@@ -4,10 +4,11 @@
 
 #include "Element.h"
 #include "Array.h"
-#include "CustomGameState.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+
+class ASpell;
 
 UCLASS()
 class PROJECTXYZ_API APlayerCharacter : public ACharacter
@@ -21,7 +22,10 @@ public:
 
 	void moveCamera(float DeltaSeconds);
 	void ReleaseSpellForward();
+	void beginCharge();
+	void endCharge();
 	void ReleaseSpellSelf();
+	void KeyupForward();
 
 
 	void Push(CElement e);
@@ -35,7 +39,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-
 	UPROPERTY(EditAnywhere)
 		USceneComponent* camera;
 
@@ -45,11 +48,15 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
+	UPROPERTY(EditAnywhere)
+		float MaxChargeTime = 5.0;
 	
 
 private:
 
 	CElement* stack = nullptr;
 	FVector startOffset;
+	ASpell* currentSpell;
 	int index = 0;
+	FTimerHandle chargeHandler;
 };

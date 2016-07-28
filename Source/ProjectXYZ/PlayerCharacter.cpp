@@ -2,6 +2,9 @@
 
 #include "ProjectXYZ.h"
 #include "PlayerCharacter.h"
+#include "CustomGameState.h"
+#include "Spell.h"
+#include "ChargeableSpell.h"
 
 
 // Sets default values
@@ -96,15 +99,59 @@ void APlayerCharacter::ReleaseSpellForward()
 		in.Add(stack[i]);
 	}
 
-	ASpell* spell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(in, false, GetActorLocation());
+	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(in, false, *this);
+
+	switch (currentSpell->Type)
+	{
+	case Spelltype::Charged:
+		beginCharge();
+		break;
+	default:
+		break;
+
+	}
+
 	index = 0;
 	
+}
+
+void APlayerCharacter::beginCharge()
+{
+	// Animations, Particles missing
+	GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MaxChargeTime, 0);
+
+}
+
+void APlayerCharacter::endCharge()
+{
+	float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->chargeHandler);
+	GetWorldTimerManager().ClearTimer(chargeHandler);
+	static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
+	currentSpell->StartBehavior(*this);
 }
 
 void APlayerCharacter::ReleaseSpellSelf()
 {
 
 }
+
+void APlayerCharacter::KeyupForward()
+{
+	if (currentSpell != nullptr)
+	{
+		switch (currentSpell->Type)
+		{
+		case Spelltype::Charged:
+			endCharge();
+			currentSpell = nullptr;
+			break;
+		default:
+			currentSpell->EndBehavior(); 
+			currentSpell = nullptr;
+		}
+	}
+}
+
 
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)

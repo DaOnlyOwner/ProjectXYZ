@@ -17,6 +17,7 @@ void APlayerCharacterController::SetupInputComponent()
 	Super::SetupInputComponent();
 	InputComponent->BindAxis("SetWaypoint", this, &APlayerCharacterController::setWaypoint);
 	InputComponent->BindAction("ForwardCast", IE_Pressed, this, &APlayerCharacterController::ForwardCast);
+	InputComponent->BindAction("ForwardCast", IE_Released, this, &APlayerCharacterController::ForwardCastRelease);
 }
 
 void APlayerCharacterController::BeginPlay()
@@ -32,6 +33,11 @@ void APlayerCharacterController::BeginPlay()
 void APlayerCharacterController::ForwardCast()
 {
 	actor->ReleaseSpellForward();
+}
+
+void APlayerCharacterController::ForwardCastRelease()
+{
+	actor->KeyupForward();
 }
 
 void APlayerCharacterController::SelfCast()

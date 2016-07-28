@@ -3,8 +3,16 @@
 #pragma once
 
 #include "Element.h"
+#include "PlayerCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Spell.generated.h"
+
+enum Spelltype
+{
+	Charged = 0,
+	Channeled = 1,
+	Burst = 2
+};
 
 UCLASS()
 class PROJECTXYZ_API ASpell : public AActor
@@ -12,9 +20,8 @@ class PROJECTXYZ_API ASpell : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
-	ASpell();
 
+	Spelltype Type;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -22,12 +29,16 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 	
 	// Advance this if you need.
-	virtual void StartBehavior();
-	virtual void EndBehavior();
+	virtual void StartBehavior(const APlayerCharacter& player) {};
+	virtual void EndBehavior() {};
 	
-	void PushAdditionalElement(CElement& element);
+	FORCEINLINE void PushAdditionalElement(CElement& element)
+	{
+		additionalElements[index] = element;
+		index++;
+	}
 
-private:
+protected:
 	CElement additionalElements[2];
 	short index = 0;
 

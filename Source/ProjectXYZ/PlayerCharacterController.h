@@ -23,6 +23,8 @@ public:
 	void SelfCast(); // May not be const
 	void ForwardCast(); // May not be const
 
+	void ForwardCastRelease();
+
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
