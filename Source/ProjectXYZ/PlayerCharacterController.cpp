@@ -55,7 +55,6 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 		if (WasInputKeyJustPressed(EKeys::Q))
 		{
-<<<<<<< HEAD
 			actor->AddElementToQueue(water);
 		}
 		if (WasInputKeyJustPressed(EKeys::W))
