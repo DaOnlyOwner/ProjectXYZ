@@ -39,7 +39,7 @@ public:
 
 	   additionalElems++;
 	}
-	
+
 	// Advance this if you need.
 	virtual void StartBehavior(const APlayerCharacter& player) {};
 	virtual void EndBehavior() {};
@@ -48,5 +48,4 @@ protected:
 	CElement &additionalElem1 = nullElement;
 	CElement &additionalElem2 = nullElement;
 	short additionalElems = 0;
-
 };

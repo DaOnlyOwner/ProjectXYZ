@@ -18,7 +18,7 @@ ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, con
 		{
 			queue.RemoveAtSwap(indexF);
 			queue.RemoveAtSwap(indexQ);
-			queue.Add(&steam);
+			queue.Add(steam);
 		}
 
 		else
@@ -28,7 +28,7 @@ ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, con
 			{
 				queue.RemoveAtSwap(indexR);
 				queue.RemoveAtSwap(indexQ);
-				queue.Add(&ice);
+				queue.Add(ice);
 			}
 		}
 
@@ -51,7 +51,6 @@ ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, con
 
 		if(queue.Num()>2)
 		   out->PushAdditionalElement(*queue[2]);
-
 	}
 
 	else

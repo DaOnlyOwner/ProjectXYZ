@@ -90,3 +90,5 @@ CMakeFiles/*
 /ProjectXYZCodeCompletionFolders.txt
 /ProjectXYZCodeLitePreProcessor.txt
 /cmake_install.cmake
+=======
+.ctrlp_cache/

@@ -80,7 +80,6 @@ void APlayerCharacter::AddElementToQueue(CElement &e)
 	elementQueueSize++;
 }
 
-
 void APlayerCharacter::ReleaseSpellForward()
 {
 	if (elementQueueSize == 0)

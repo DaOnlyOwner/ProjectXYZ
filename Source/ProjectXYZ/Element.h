@@ -23,7 +23,6 @@ public:
 		return cancelledBy;
 	}
 
-
 	/*
 	@return second opposite element.
 	@example d cancels a
@@ -54,7 +53,6 @@ public:
 	   return name == 'X';
 	}
 
-
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
 
 	inline bool operator==(char c ) const 
@@ -70,10 +68,8 @@ public:
 	~CElement();
 
 private:
-
 	//don't copy elements
 	CElement (CElement &el) {};
-
 	char cancelledBy;
 	char cancelledBy2;
 	char name;
