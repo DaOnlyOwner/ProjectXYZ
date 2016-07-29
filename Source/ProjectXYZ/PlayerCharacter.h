@@ -28,7 +28,7 @@ public:
 	void KeyupForward();
 
 
-	void Push(CElement e);
+	void AddElementToQueue(CElement &e);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,9 +54,9 @@ public:
 
 private:
 
-	CElement* stack = nullptr;
+	CElement *elementQueue[3] = {&nullElement, &nullElement, &nullElement};
 	FVector startOffset;
 	ASpell* currentSpell;
-	int index = 0;
+	int elementQueueSize = 0;
 	FTimerHandle chargeHandler;
 };
