@@ -58,4 +58,12 @@ public:
 private:
 	APlayerCharacter* actor;
 	void setWaypoint(float AxisValue);
+	void handleWaterKey();
+	void handleLifeKey();
+	void handleShieldKey();
+	void handleColdKey();
+	void handleLightningKey();
+	void handleDeathKey();
+	void handleEarthKey();
+	void handleFireKey();
 };
