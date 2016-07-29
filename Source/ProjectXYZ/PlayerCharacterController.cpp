@@ -55,35 +55,35 @@ void APlayerCharacterController::Tick(float DeltaSeconds)
 
 		if (WasInputKeyJustPressed(EKeys::Q))
 		{
-			actor->Push(water);
+			actor->AddElementToQueue(water);
 		}
 		if (WasInputKeyJustPressed(EKeys::W))
 		{
-			actor->Push(life);
+			actor->AddElementToQueue(life);
 		}
 		if (WasInputKeyJustPressed(EKeys::E))
 		{
-			actor->Push(shield);
+			actor->AddElementToQueue(shield);
 		}
 		if (WasInputKeyJustPressed(EKeys::R))
 		{
-			actor->Push(cold);
+			actor->AddElementToQueue(cold);
 		}
 		if (WasInputKeyJustPressed(EKeys::A))
 		{
-			actor->Push(lightning);
+			actor->AddElementToQueue(lightning);
 		}
 		if (WasInputKeyJustPressed(EKeys::S))
 		{
-			actor->Push(death);
+			actor->AddElementToQueue(death);
 		}
 		if (WasInputKeyJustPressed(EKeys::D))
 		{
-			actor->Push(earth);
+			actor->AddElementToQueue(earth);
 		}
 		if (WasInputKeyJustPressed(EKeys::F))
 		{
-			actor->Push(fire);
+			actor->AddElementToQueue(fire);
 		}
 	}
 }
