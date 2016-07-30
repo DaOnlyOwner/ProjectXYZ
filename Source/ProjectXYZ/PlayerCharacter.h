@@ -54,9 +54,8 @@ public:
 
 private:
 
-	CElement *elementQueue[3] = {&nullElement, &nullElement, &nullElement};
+	ElementQueue elementQueue;
 	FVector startOffset;
 	ASpell* currentSpell;
-	int elementQueueSize = 0;
 	FTimerHandle chargeHandler;
 };

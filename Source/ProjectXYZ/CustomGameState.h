@@ -8,7 +8,6 @@
 #include "GameFramework/GameState.h"
 #include "CustomGameState.generated.h"
 
-
 struct SpellToCaster
 {
 	const UClass* Spellclass; // The referenced object will remain until the end of the game. 
@@ -39,7 +38,7 @@ public:
 
 	};
 
-	ASpell * genSpell(TArray<CElement *>& queue, bool selfcast, const APlayerCharacter & player);
+	ASpell * genSpell(ElementQueue &queue, bool selfcast, const APlayerCharacter & player);
 
 	UPROPERTY(EditAnywhere)
 		TArray<FString> KeysNormal;

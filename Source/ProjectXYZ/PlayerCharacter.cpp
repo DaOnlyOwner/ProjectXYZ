@@ -38,9 +38,9 @@ void APlayerCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	FString string;
-	for (int i = 0; i < elementQueueSize; i++)
+	for (int i = 0; i < elementQueue.Num(); i++)
 	{
-		string += elementQueue[i]->GetName();
+	    string += CElement::GetElementByID((ElementID)elementQueue[i]).GetName();
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string,true, FVector2D{ 5,5 });
@@ -54,46 +54,21 @@ void APlayerCharacter::Tick( float DeltaTime )
 
 void APlayerCharacter::AddElementToQueue(CElement &e)
 {
-
-
-	for (int i = 0; i < elementQueueSize; i++)
-	{
-		if (e.Cancels(*elementQueue[i]))
-		{
-			// Remove elementQueue[i] and resize.
-			for (int k = i; k < elementQueueSize - 1; k++)
-			{
-				elementQueue[k] = elementQueue[k + 1];
-			}
-			elementQueueSize--;
-			return; // One element can only remove one element from the Q.
-					//TODO: Function to inform that element was removed
-		}
-	}
-
-	if (elementQueueSize == 3)
-	{
-		return; // Not more than 3 elements at once.
-	}
-
-	elementQueue[elementQueueSize] = &e;
-	elementQueueSize++;
+   if(elementQueue.RemoveSingle(e.GetCancelledBy()) == 0 &&
+      elementQueue.RemoveSingle(e.GetCancelledBy2()) == 0 &&
+      elementQueue.Num() < 3)
+      elementQueue.Push(e.GetID());
 }
 
 void APlayerCharacter::ReleaseSpellForward()
 {
-	if (elementQueueSize == 0)
+        if (elementQueue.Num() == 0)
 	{
+	    //melee here?
 		return;
 	}
 
-	TArray<CElement *> in;
-	for (int i = 0; i < elementQueueSize; i++)
-	{
-		in.Add(elementQueue[i]);
-	}
-
-	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(in, false, *this);
+	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false, *this);
 
 	switch (currentSpell->Type)
 	{
@@ -105,8 +80,7 @@ void APlayerCharacter::ReleaseSpellForward()
 
 	}
 
-	elementQueueSize = 0;
-	
+	elementQueue.Empty();
 }
 
 void APlayerCharacter::beginCharge()
