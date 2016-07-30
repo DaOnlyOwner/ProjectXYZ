@@ -7,8 +7,6 @@
 Class defining the elements.
 */
 
-typedef  TArray<uint8> ElementQueue;
-
 enum ElementID {
    NULL_ID,
    WATER_ID,
@@ -22,6 +20,8 @@ enum ElementID {
    ICE_ID,
    STEAM_ID
 };
+
+typedef TArray<uint8> ElementQueue;
 
 class PROJECTXYZ_API CElement
 {

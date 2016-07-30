@@ -3,8 +3,8 @@
 #include "ProjectXYZ.h"
 #include "CustomGameState.h"
 #include "PlayerCharacter.h"
+#include "RockSpell.h"
 
-// I might replace that with a better working solution. Right now its just too ugly
 ASpell* ACustomGameState::genSpell(ElementQueue &queue, bool selfcast, const APlayerCharacter& player)
 {
    ASpell *spell = nullptr;
@@ -29,7 +29,7 @@ ASpell* ACustomGameState::genSpell(ElementQueue &queue, bool selfcast, const APl
        }
        else if(queue.Find(WATER_ID) && queue.Find(COLD_ID))
        {
-	   // shards
+	   // shards AoE
        }
        else
        {
@@ -45,7 +45,7 @@ ASpell* ACustomGameState::genSpell(ElementQueue &queue, bool selfcast, const APl
 	   }
 	   else if(queue.RemoveSingleSwap(EARTH_ID, false))
 	   {
-	       // wall
+	       // Wall
 	   }
 	   else if(queue.RemoveSingleSwap(LIGHTNING_ID, false))
 	   {
@@ -66,7 +66,14 @@ ASpell* ACustomGameState::genSpell(ElementQueue &queue, bool selfcast, const APl
        }
        else if(queue.RemoveSingleSwap(EARTH_ID, false))
        {
-	   // rock
+	   int size = 1;
+	   ARockSpell *rockSpell;
+	   
+           size += queue.RemoveSwap(EARTH_ID);
+	      
+           rockSpell = static_cast<ARockSpell*>(GetWorld()->SpawnActor(ARockSpell::StaticClass()));
+	   rockSpell->init(1, queue);
+	   spell = static_cast<ASpell*>(rockSpell);
        }
        else if(queue.RemoveSingleSwap(LIGHTNING_ID, false))
        {
@@ -85,7 +92,7 @@ ASpell* ACustomGameState::genSpell(ElementQueue &queue, bool selfcast, const APl
 	   // spray
        }
    }
-      
-       return spell;
+
+   return spell;
 }
 

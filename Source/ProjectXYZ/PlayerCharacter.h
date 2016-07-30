@@ -53,7 +53,6 @@ public:
 	
 
 private:
-
 	ElementQueue elementQueue;
 	FVector startOffset;
 	ASpell* currentSpell;

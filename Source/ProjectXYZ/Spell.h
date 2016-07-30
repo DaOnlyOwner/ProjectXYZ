@@ -33,5 +33,7 @@ public:
 	virtual void EndBehavior() {};
 	
 protected:
-	TArray<ElementID> additionalElems;
+	// PackedElementQueue additionalElements;
+	UPROPERTY()
+	TArray<uint8> additionalElements;
 };
