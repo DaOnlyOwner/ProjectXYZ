@@ -74,3 +74,6 @@ ipch/*
 *.swp
 *.swo
 .ctrlp_cache/
+
+# core file
+core

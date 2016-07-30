@@ -3,67 +3,96 @@
 #include "ProjectXYZ.h"
 #include "CustomGameState.h"
 #include "PlayerCharacter.h"
+#include "RockSpell.h"
 
-// I might replace that with a better working solution. Right now its just too ugly
-ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, const APlayerCharacter& player)
+ASpell* ACustomGameState::genSpell(ElementQueue &queue, bool selfcast, const APlayerCharacter& player)
 {
+   ASpell *spell = nullptr;
 
-	//Replace
-        int32 indexQ = queue.IndexOfByPredicate([](CElement *el){
-	return el->GetName() == 'Q';});
-        if (indexQ != INDEX_NONE)
-	{
-	        int32 indexF = queue.IndexOfByPredicate([](CElement *el){return el->GetName() == 'F';});
-		if (indexF != INDEX_NONE)
-		{
-			queue.RemoveAtSwap(indexF);
-			queue.RemoveAtSwap(indexQ);
-			queue.Add(&steam);
-		}
+   if(selfcast) {
+       if(queue.RemoveSingleSwap(SHIELD_ID, false))
+       {
+	   if(queue.Num() == 0) {
+	       // dome shield
+	   }
+	   else {
+	       // ward
+	   }
+       }
+       else if(queue.RemoveSingleSwap(EARTH_ID, false))
+       {
+	   // earthquake
+       }
+       else if(queue.RemoveSingleSwap(LIGHTNING_ID, false))
+       {
+	  // lightning AoE
+       }
+       else if(queue.Find(WATER_ID) && queue.Find(COLD_ID))
+       {
+	   // shards AoE
+       }
+       else
+       {
+	   // AoE
+       }
+   }
+   else
+   {
+       if(queue.RemoveSingleSwap(SHIELD_ID, false))
+       {
+	   if(queue.Num() == 0) {
+	       // front shield
+	   }
+	   else if(queue.RemoveSingleSwap(EARTH_ID, false))
+	   {
+	       // Wall
+	   }
+	   else if(queue.RemoveSingleSwap(LIGHTNING_ID, false))
+	   {
+	       // lightning storm
+	   }
+	   else if(queue.Find(WATER_ID) && queue.Find(COLD_ID))
+	   {
+	       // ice push
+	   }
+	   else if(queue.Find(DEATH_ID) || queue.Find(LIFE_ID))
+	   {
+	       // mines
+	   }
+	   else
+	   {
+	       // elemental storm
+	   }
+       }
+       else if(queue.RemoveSingleSwap(EARTH_ID, false))
+       {
+	   int size = 1;
+	   ARockSpell *rockSpell;
+	   
+           size += queue.RemoveSwap(EARTH_ID);
+	      
+           rockSpell = static_cast<ARockSpell*>(GetWorld()->SpawnActor(ARockSpell::StaticClass()));
+	   rockSpell->init(1, queue);
+	   spell = static_cast<ASpell*>(rockSpell);
+       }
+       else if(queue.RemoveSingleSwap(LIGHTNING_ID, false))
+       {
+	  // lightning
+       }
+       else if(queue.Find(WATER_ID) && queue.Find(COLD_ID))
+       {
+	   // shards
+       }
+       else if(queue.Find(DEATH_ID) || queue.Find(LIFE_ID))
+       {
+	   // beam
+       }
+       else
+       {
+	   // spray
+       }
+   }
 
-		else
-		{
-	    	        int32 indexR = queue.IndexOfByPredicate([](CElement *el){return el->GetName() == 'R';});
-			if (indexR != INDEX_NONE)
-			{
-				queue.RemoveAtSwap(indexR);
-				queue.RemoveAtSwap(indexQ);
-				queue.Add(&ice);
-			}
-		}
-
-	}
-
-	//Sort
-	queue.Sort();
-	FString lookupstring = selfcast ? "!" : "";
-	ASpell* out;
-	if (queue[0]->GetName() == 'E')
-	{
-		lookupstring += 'E'; 
-		if (queue.Num() > 1)
-		{
-			lookupstring += queue[1]->GetName();
-		}
-
-
-		out = static_cast<ASpell*>(GetWorld()->SpawnActor(eDict[lookupstring]));
-
-		if(queue.Num()>2)
-		   out->PushAdditionalElement(*queue[2]);
-	}
-
-	else
-	{
-		lookupstring.AppendChar(queue[0]->GetName()); //This takes 2ms somehow lol
-		out = static_cast<ASpell*>(GetWorld()->SpawnActor(normalDict[lookupstring]));
-		for (int i = 0; i < queue.Num(); i++)
-		{
-			out->PushAdditionalElement(*queue[i]);
-		}
-	}
-
-
-	return out;
+   return spell;
 }
 

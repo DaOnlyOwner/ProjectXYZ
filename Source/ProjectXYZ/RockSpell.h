@@ -22,9 +22,10 @@ public:
 
 	ARockSpell();
 	~ARockSpell();
+	void init(int size, ElementQueue add);
 	void StartBehavior(const APlayerCharacter& player) override;
 	void EndBehavior() override;
 	
 private:
-
+	int rocksize;
 };

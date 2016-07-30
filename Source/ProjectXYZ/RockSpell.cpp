@@ -7,6 +7,7 @@
 ARockSpell::ARockSpell()
 {
 	Type = Spelltype::Charged;
+	// Can we create the mesh here, when the size is still unknown?
 	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
 	RootComponent = RockMesh;
 
@@ -17,6 +18,12 @@ ARockSpell::ARockSpell()
 ARockSpell::~ARockSpell()
 {
 
+}
+
+void ARockSpell::init(int size, ElementQueue add)
+{
+   additionalElements = add;
+   rocksize = size;
 }
 
 void ARockSpell::StartBehavior(const APlayerCharacter& player)

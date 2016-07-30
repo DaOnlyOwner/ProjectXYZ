@@ -28,24 +28,12 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void PushAdditionalElement(CElement &el) {
-	   switch (additionalElems) {
-	     case 0:
-		additionalElem1 = el; break;
-	     case 1:
-		additionalElem2 = el; break;
-	     case 2: return;
-	   }
-
-	   additionalElems++;
-	}
-
 	// Advance this if you need.
 	virtual void StartBehavior(const APlayerCharacter& player) {};
 	virtual void EndBehavior() {};
 	
 protected:
-	CElement &additionalElem1 = nullElement;
-	CElement &additionalElem2 = nullElement;
-	short additionalElems = 0;
+	// PackedElementQueue additionalElements;
+	UPROPERTY()
+	TArray<uint8> additionalElements;
 };

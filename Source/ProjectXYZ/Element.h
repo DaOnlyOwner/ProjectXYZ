@@ -7,12 +7,27 @@
 Class defining the elements.
 */
 
+enum ElementID {
+   NULL_ID,
+   WATER_ID,
+   LIFE_ID,
+   SHIELD_ID,
+   COLD_ID,
+   LIGHTNING_ID,
+   DEATH_ID,
+   EARTH_ID,
+   FIRE_ID,
+   ICE_ID,
+   STEAM_ID
+};
+
+typedef TArray<uint8> ElementQueue;
 
 class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement(char name_ ,char canceledBy_ , char canceledBy2_, int rank_ );
+        CElement(char name_ , ElementID id, char canceledBy_ , char canceledBy2_, int rank_ );
 
 	/*
 	@return first opposite element.
@@ -37,27 +52,34 @@ public:
 		return name;
 	}
 
+	inline char GetID() const
+	{
+	   return id;
+	}
+
 	inline int GetRank() const
 	{
 		return rank;
 	}
 
+	static CElement &GetElementByID(ElementID id);
+
 	bool Cancels(CElement &el)
 	{
-	   return name == el.GetCancelledBy() ||
-	     name == el.GetCancelledBy2();
+	   return id == el.GetCancelledBy() ||
+	     id == el.GetCancelledBy2();
 	}
 
 	bool isNull()
 	{
-	   return name == 'X';
+	   return id == 0;
 	}
 
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
 
-	inline bool operator==(char c ) const 
+	inline bool operator==(ElementID c) const 
 	{
-		return c == name;
+		return c == id;
 	}
 
 	inline bool operator<(const CElement& other) const
@@ -70,6 +92,8 @@ public:
 private:
 	//don't copy elements
 	CElement (CElement &el) {};
+
+	char id;
 	char cancelledBy;
 	char cancelledBy2;
 	char name;
@@ -77,3 +101,5 @@ private:
 };
 
 extern CElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;
+
+
