@@ -17,7 +17,7 @@ CElement nullElement('X', 'X', 'X', 0);
 
 CElement::CElement(char name_, char canceledBy_, char canceledBy2_, int rank_):name(name_),cancelledBy(canceledBy_), cancelledBy2(canceledBy2_), rank(rank_)
 {
-
+	/*UE_LOG(LogTemp, Warning, TEXT("new element instanciated"));*/
 }
 
 
@@ -25,3 +25,19 @@ CElement::~CElement()
 {
 }
 
+CElement CElement::getElementByName(char name)
+{
+	switch (name)
+	{
+	case 'Q': return water;
+	case 'W': return life;
+	case 'E': return shield;
+	case 'R': return cold;
+	case 'A': return lightning;
+	case 'S': return death;
+	case 'D': return earth;
+	case 'F': return fire;
+	default: return nullElement;
+	}
+	
+}
