@@ -67,9 +67,12 @@ public:
 
 	~CElement();
 
+	static CElement getElementByName(char name);
+
 private:
 	//don't copy elements
 	CElement (CElement &el) {};
+	
 	char cancelledBy;
 	char cancelledBy2;
 	char name;
