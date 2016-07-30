@@ -70,6 +70,11 @@ void APlayerCharacter::ReleaseSpellForward()
 
 	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false, *this);
 
+	elementQueue.Empty();
+
+	if(currentSpell == nullptr)
+	   return;
+	
 	switch (currentSpell->Type)
 	{
 	case Spelltype::Charged:
@@ -80,7 +85,7 @@ void APlayerCharacter::ReleaseSpellForward()
 
 	}
 
-	elementQueue.Empty();
+	
 }
 
 void APlayerCharacter::beginCharge()
