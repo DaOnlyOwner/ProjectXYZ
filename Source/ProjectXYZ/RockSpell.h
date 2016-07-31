@@ -20,6 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Mesh)
 		UStaticMeshComponent* RockMesh;
 
+	
 	ARockSpell();
 	~ARockSpell();
 	void StartBehavior(const APlayerCharacter& player) override;
