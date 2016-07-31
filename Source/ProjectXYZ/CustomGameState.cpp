@@ -58,7 +58,8 @@ ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, con
 	{
 		lookupstring.AppendChar(queue[0]->GetName()); //This takes 2ms somehow lol
 
-		out = static_cast<ASpell*>(GetWorld()->SpawnActor(ARockSpell::StaticClass()));
+		out = static_cast<ASpell*>(GetWorld()->SpawnActor(queueToSpellType[lookupstring]));
+
 		for (int i = 0; i < queue.Num(); i++)
 		{
 			out->PushAdditionalElement(*queue[i]);

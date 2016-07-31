@@ -8,8 +8,9 @@
 ARockSpell::ARockSpell()
 {
 	Type = Spelltype::Charged;
-	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> meshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Chair.SM_Chair'"));
+	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
 	RockMesh->SetStaticMesh(meshAsset.Object);
 	RootComponent = RockMesh;
 
