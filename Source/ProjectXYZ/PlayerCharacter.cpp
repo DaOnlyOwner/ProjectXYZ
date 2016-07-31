@@ -25,12 +25,8 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
-	{
-		startOffset = camera->GetRelativeTransform().GetLocation();
-		camera->DetachFromParent(true, true);
-	}
-	
+	startOffset = camera->GetRelativeTransform().GetLocation();
+	camera->DetachFromParent(true, true);	
 }
 
 // Called every frame
@@ -44,9 +40,7 @@ void APlayerCharacter::Tick( float DeltaTime )
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string,true, FVector2D{ 5,5 });
-
-
-	if (HasAuthority()) moveCamera(DeltaTime);
+	moveCamera(DeltaTime);
 	
 }
 
@@ -162,6 +156,7 @@ void APlayerCharacter::moveCamera(float DeltaTime)
 	float xM;
 	float yM;
 	APlayerController* controller = static_cast<APlayerController*>(GetController());
+	if (!controller)return;
 
 	controller->GetViewportSize(x, y);
 	if (controller->GetMousePosition(xM, yM))

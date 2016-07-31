@@ -42,13 +42,13 @@ public:
 		return rank;
 	}
 
-	bool Cancels(CElement &el)
+	inline bool Cancels(CElement &el) const
 	{
 	   return name == el.GetCancelledBy() ||
 	     name == el.GetCancelledBy2();
 	}
 
-	bool isNull()
+	inline bool isNull() const
 	{
 	   return name == 'X';
 	}

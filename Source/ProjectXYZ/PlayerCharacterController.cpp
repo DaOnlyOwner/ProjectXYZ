@@ -71,7 +71,7 @@ void APlayerCharacterController::handleFireKey()
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
-	actor = static_cast<APlayerCharacter*>(this->GetCharacter()); // Later: dynamic cast
+	actor = static_cast<APlayerCharacter*>(this->GetCharacter());
 
 	MovementVector = FVector(0, 0, 0);
 	Waypoint = FVector(0, 0, 0);
