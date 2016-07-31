@@ -7,6 +7,18 @@
 Class defining the elements.
 */
 
+#define STEAM_CHAR 'T'
+#define ICE_CHAR 'I'
+#define WATER_CHAR 'Q'
+#define FIRE_CHAR 'F'
+#define COLD_CHAR 'R'
+#define LIFE_CHAR 'W'
+#define DEATH_CHAR 'S'
+#define LIGHTNING_CHAR 'A'
+#define EARTH_CHAR 'D'
+#define SHIELD_CHAR 'E'
+#define NULL_CHAR 'X'
+#define SELFCAST_CHAR '!'
 
 class PROJECTXYZ_API CElement
 {
@@ -50,7 +62,7 @@ public:
 
 	inline bool isNull() const
 	{
-	   return name == 'X';
+	   return name == NULL_CHAR;
 	}
 
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------

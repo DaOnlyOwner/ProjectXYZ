@@ -4,66 +4,66 @@
 #include "CustomGameState.h"
 #include "PlayerCharacter.h"
 
+int32 elementIndex(TArray<CElement *>& queue, char el)
+{
+   return queue.IndexOfByPredicate([=](CElement *el2){
+	 return el2->GetName() == el;
+     });
+}
+
 // I might replace that with a better working solution. Right now its just too ugly
 ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, const APlayerCharacter& player)
 {
 
 	//Replace
-        int32 indexQ = queue.IndexOfByPredicate([](CElement *el){
-	return el->GetName() == 'Q';});
-        if (indexQ != INDEX_NONE)
+        int32 waterIndex = elementIndex(queue, WATER_CHAR);
+        if (waterIndex != INDEX_NONE)
 	{
-	        int32 indexF = queue.IndexOfByPredicate([](CElement *el){return el->GetName() == 'F';});
-		if (indexF != INDEX_NONE)
+	        int32 fireIndex = elementIndex(queue, FIRE_CHAR);
+		if (fireIndex != INDEX_NONE)
 		{
-			queue.RemoveAtSwap(indexF);
-			queue.RemoveAtSwap(indexQ);
+			queue.RemoveAtSwap(fireIndex);
+			queue.RemoveAtSwap(waterIndex);
 			queue.Add(&steam);
 		}
 
 		else
 		{
-	    	        int32 indexR = queue.IndexOfByPredicate([](CElement *el){return el->GetName() == 'R';});
-			if (indexR != INDEX_NONE)
+		        int32 coldIndex = elementIndex(queue, COLD_CHAR);
+			if (coldIndex != INDEX_NONE)
 			{
-				queue.RemoveAtSwap(indexR);
-				queue.RemoveAtSwap(indexQ);
+				queue.RemoveAtSwap(coldIndex);
+				queue.RemoveAtSwap(waterIndex);
 				queue.Add(&ice);
 			}
 		}
-
 	}
 
 	//Sort
 	queue.Sort();
 	FString lookupstring = selfcast ? "!" : "";
-	ASpell* out;
-	if (queue[0]->GetName() == 'E')
+	ASpell* spell;
+
+	if (queue[0]->GetName() == SHIELD_CHAR)
 	{
-		lookupstring += 'E'; 
+		lookupstring += SHIELD_CHAR; 
 		if (queue.Num() > 1)
-		{
-			lookupstring += queue[1]->GetName();
-		}
-
-
-		out = static_cast<ASpell*>(GetWorld()->SpawnActor(eDict[lookupstring]));
-
-		if(queue.Num()>2)
-		   out->PushAdditionalElement(*queue[2]);
+		   lookupstring += queue[1]->GetName();
 	}
 
 	else
 	{
-		lookupstring.AppendChar(queue[0]->GetName());
-		out = static_cast<ASpell*>(GetWorld()->SpawnActor(normalDict[lookupstring]));
-		for (int i = 0; i < queue.Num(); i++)
-		{
-			out->PushAdditionalElement(*queue[i]);
-		}
+
+		lookupstring.AppendChar(queue[0]->GetName()); //This takes 2ms somehow lol
+		spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
+
 	}
 
+	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
+	
+	if(spell)
+	   spell->SetSpellElements(queue);
 
-	return out;
+	return spell;
 }
 
