@@ -2,12 +2,16 @@
 
 #include "ProjectXYZ.h"
 #include "RockSpell.h"
+#include "engine.h"
 
 
 ARockSpell::ARockSpell()
 {
 	Type = Spelltype::Charged;
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> meshAsset(TEXT("StaticMesh'/Game/StarterContent/Props/SM_Chair.SM_Chair'"));
 	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
+	RockMesh->SetStaticMesh(meshAsset.Object);
 	RootComponent = RockMesh;
 
 	this->SetActorEnableCollision(false);

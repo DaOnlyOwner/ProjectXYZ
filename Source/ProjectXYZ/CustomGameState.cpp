@@ -3,6 +3,7 @@
 #include "ProjectXYZ.h"
 #include "CustomGameState.h"
 #include "PlayerCharacter.h"
+#include "RockSpell.h"
 
 // I might replace that with a better working solution. Right now its just too ugly
 ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, const APlayerCharacter& player)
@@ -56,7 +57,9 @@ ASpell* ACustomGameState::genSpell(TArray<CElement *>& queue, bool selfcast, con
 	else
 	{
 		lookupstring.AppendChar(queue[0]->GetName()); //This takes 2ms somehow lol
-		out = static_cast<ASpell*>(GetWorld()->SpawnActor(normalDict[lookupstring]));
+
+		out = static_cast<ASpell*>(GetWorld()->SpawnActor(queueToSpellType[lookupstring]));
+
 		for (int i = 0; i < queue.Num(); i++)
 		{
 			out->PushAdditionalElement(*queue[i]);

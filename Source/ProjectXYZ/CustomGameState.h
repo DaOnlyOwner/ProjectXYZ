@@ -6,6 +6,7 @@
 #include "Spell.h"
 #include "PlayerCharacter.h"
 #include "GameFramework/GameState.h"
+#include "RockSpell.h"
 #include "CustomGameState.generated.h"
 
 
@@ -37,6 +38,7 @@ public:
 		KeysNormal.Empty();
 		ValuesNormal.Empty();
 
+		queueToSpellType.Add("D", ARockSpell::StaticClass());
 	};
 
 	ASpell * genSpell(TArray<CElement *>& queue, bool selfcast, const APlayerCharacter & player);
@@ -49,5 +51,6 @@ public:
 private:
 	TMap<FString, TSubclassOf<ASpell>> eDict;
 	TMap<FString, TSubclassOf<ASpell>> normalDict;
+	TMap<FString, TSubclassOf<ASpell>> queueToSpellType;
 
 };
