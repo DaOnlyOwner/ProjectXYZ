@@ -31,7 +31,7 @@ public:
 	{
 		for (int i = 0; i < KeysNormal.Num(); i++)
 		{
-			normalDict.Add(KeysNormal[i], MoveTemp(ValuesNormal[i])); // I am not that familiar with move semantics but I believe that's the way it's done.
+			spellClassDict.Add(KeysNormal[i], MoveTemp(ValuesNormal[i])); // I am not that familiar with move semantics but I believe that's the way it's done.
 		}
 
 		KeysNormal.Empty();
@@ -47,7 +47,6 @@ public:
 		TArray<TSubclassOf<ASpell>> ValuesNormal;
 
 private:
-	TMap<FString, TSubclassOf<ASpell>> eDict;
-	TMap<FString, TSubclassOf<ASpell>> normalDict;
+	TMap<FString, TSubclassOf<ASpell>> spellClassDict;
 
 };
