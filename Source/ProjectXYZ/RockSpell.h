@@ -24,7 +24,11 @@ public:
 		USphereComponent* Hitbox;
 
 	UFUNCTION(BlueprintCallable, Category = Collision)
-		void HandleCollision(AActor* otherActor);
+		void HandleStartCollision(AActor* otherActor);
+	
+	UFUNCTION(BlueprintCallable, Category = Collision)
+		void HandleEndCollision(AActor* otherActor);
+
 
 	ARockSpell();
 	~ARockSpell();
