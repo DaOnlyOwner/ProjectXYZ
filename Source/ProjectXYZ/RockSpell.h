@@ -20,6 +20,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Mesh)
 		UStaticMeshComponent* RockMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
+		USphereComponent* Hitbox;
+
+	UFUNCTION(BlueprintCallable, Category = Collision)
+		void HandleStartCollision(AActor* otherActor);
+	
+	UFUNCTION(BlueprintCallable, Category = Collision)
+		void HandleEndCollision(AActor* otherActor);
+
+
 	ARockSpell();
 	~ARockSpell();
 	void StartBehavior(const APlayerCharacter& player) override;
