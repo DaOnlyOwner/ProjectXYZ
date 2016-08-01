@@ -128,7 +128,7 @@ void APlayerCharacterController::setWaypoint(float AxisValue)
 	if (actor != nullptr && AxisValue > 0)
 	{
 		FHitResult result;
-		GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, result);
+		GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, result);
 		Waypoint = FVector(result.ImpactPoint);
 
 		MovementVector = (Waypoint - actor->GetActorLocation());

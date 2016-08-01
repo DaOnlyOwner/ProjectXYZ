@@ -3,12 +3,14 @@
 #include "ProjectXYZ.h"
 #include "RockSpell.h"
 
-
 ARockSpell::ARockSpell()
 {
 	Type = Spelltype::Charged;
 	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
 	RootComponent = RockMesh;
+	movementComponent = CreateDefaultSubobject<URockMovement>(TEXT("RockMovementComponent"));
+	movementComponent->SetUpdatedComponent(RootComponent);
+	movementComponent->bIsActive = false;
 
 	this->SetActorEnableCollision(false);
 	this->SetActorHiddenInGame(true);
@@ -23,11 +25,10 @@ void ARockSpell::StartBehavior(const APlayerCharacter& player)
 {
 	this->SetActorHiddenInGame(false);
 	this->SetActorEnableCollision(true);
-
 	RockMesh->Activate(true);
-	RockMesh->SetSimulatePhysics(true);
 	SetActorLocation(player.GetActorLocation() + player.GetActorForwardVector() * 100,false,(FHitResult*)nullptr,ETeleportType::TeleportPhysics);
-	RockMesh->AddImpulse(player.GetActorForwardVector() * chargedTime*chargedTime * 100, NAME_None, true);
+	movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, player.GetActorForwardVector(), player.MaxChargeTime);
+
 }
 
 void ARockSpell::EndBehavior()
