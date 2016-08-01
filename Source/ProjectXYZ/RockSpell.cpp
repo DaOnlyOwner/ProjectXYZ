@@ -8,6 +8,8 @@ ARockSpell::ARockSpell()
 {
 	Type = Spelltype::Charged;
 	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
+	Hitbox = CreateDefaultSubobject<USphereComponent>(TEXT("Hitbox"));
+
 	RootComponent = RockMesh;
 
 	this->SetActorEnableCollision(false);
@@ -34,5 +36,8 @@ void ARockSpell::EndBehavior()
 {
 	
 }
-
+void ARockSpell::HandleCollision(AActor* otherActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("collide"));
+}
 
