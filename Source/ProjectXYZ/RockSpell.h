@@ -3,6 +3,7 @@
 #pragma once
 #include "PlayerCharacter.h"
 #include "ChargeableSpell.h"
+#include "RockMovement.h"
 #include "RockSpell.generated.h"
 
 /**
@@ -20,11 +21,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Mesh)
 		UStaticMeshComponent* RockMesh;
 
+	UPROPERTY(EditAnywhere)
+		float MaxRockDistance;
+
 	ARockSpell();
 	~ARockSpell();
 	void StartBehavior(const APlayerCharacter& player) override;
 	void EndBehavior() override;
 	
 private:
-
+	URockMovement* movementComponent;
 };
