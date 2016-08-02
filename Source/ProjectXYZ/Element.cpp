@@ -24,3 +24,18 @@ CElement::~CElement()
 {
 }
 
+CElement CElement::getCElementByName(char name)
+{
+	switch (name)
+	{
+		case WATER_CHAR: return water;
+		case FIRE_CHAR: return fire;
+		case COLD_CHAR: return cold;
+		case LIFE_CHAR: return life;
+		case DEATH_CHAR: return death;
+		case LIGHTNING_CHAR: return lightning;
+		case EARTH_CHAR: return earth;
+		case SHIELD_CHAR: return shield;
+	}
+	return nullElement;
+}
