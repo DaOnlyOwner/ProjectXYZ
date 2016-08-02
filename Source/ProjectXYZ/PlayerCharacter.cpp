@@ -5,6 +5,7 @@
 #include "CustomGameState.h"
 #include "Spell.h"
 #include "ChargeableSpell.h"
+#include "UnrealNetwork.h"
 
 
 // Sets default values
@@ -29,26 +30,42 @@ void APlayerCharacter::BeginPlay()
 	camera->DetachFromParent(true, true);	
 }
 
+void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(APlayerCharacter, ElemQueue);
+}
+
+
 // Called every frame
 void APlayerCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	FString string;
-	for (int i = 0; i < elementQueueSize; i++)
+	/*for (int i = 0; i < elementQueueSize; i++)
 	{
 		string += elementQueue[i]->GetName();
-	}
+	}*/
+	string = FString::FromInt(ElemQueue.element1);
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string,true, FVector2D{ 5,5 });
 	moveCamera(DeltaTime);
 	
 }
 
-
+void APlayerCharacter::AddElemToQueue_Implementation(int element_id)
+{
+	UE_LOG(LogTemp, Warning, TEXT("server func"));
+	ElemQueue.element1 = element_id; /* TODO */
+}
+bool APlayerCharacter::AddElemToQueue_Validate(int name)
+{
+	return true;
+}
 
 void APlayerCharacter::AddElementToQueue(CElement &e)
 {
 
+	AddElemToQueue(e.GetName()); /* this is debug */
 
 	for (int i = 0; i < elementQueueSize; i++)
 	{

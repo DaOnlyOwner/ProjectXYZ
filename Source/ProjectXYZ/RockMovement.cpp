@@ -20,8 +20,6 @@ void URockMovement::TickComponent(float DeltaTime, enum ELevelTick TickType, FAc
 		FVector newPos = horizontal_pos(timeSinceLaunch);
 		newPos.Z = vertical_pos(timeSinceLaunch);
 		UpdatedComponent->SetWorldLocation(newPos);
-
-		UE_LOG(LogTemp, Warning, TEXT("Tick"));
 	}
 }
 

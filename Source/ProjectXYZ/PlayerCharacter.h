@@ -10,6 +10,17 @@
 
 class ASpell;
 
+USTRUCT()
+struct FElemQueueStruct
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	uint8 element1;
+	uint8 element2;
+	uint8 element3;
+};
+
+
 UCLASS()
 class PROJECTXYZ_API APlayerCharacter : public ACharacter
 {
@@ -26,6 +37,11 @@ public:
 	void endCharge();
 	void ReleaseSpellSelf();
 	void KeyupForward();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void AddElemToQueue(int element_id);
+	void AddElemToQueue_Implementation(int element_id);
+	bool AddElemToQueue_Validate(int element_id);
 
 
 	void AddElementToQueue(CElement &e);
@@ -51,10 +67,13 @@ public:
 	UPROPERTY(EditAnywhere)
 		float MaxChargeTime = 5.0;
 	
+	UPROPERTY(Replicated)
+		FElemQueueStruct ElemQueue;
 
 private:
 
-	CElement *elementQueue[3] = {&nullElement, &nullElement, &nullElement};
+	CElement *elementQueue[3] = { &nullElement, &nullElement, &nullElement };
+	
 	FVector startOffset;
 	ASpell* currentSpell;
 	int elementQueueSize = 0;

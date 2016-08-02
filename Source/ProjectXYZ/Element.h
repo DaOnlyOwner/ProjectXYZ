@@ -20,17 +20,33 @@ Class defining the elements.
 #define NULL_CHAR 'X'
 #define SELFCAST_CHAR '!'
 
+UENUM()
+enum ELEMENTS
+{
+	NULL_ELEM,
+	WATER_ELEM,
+	LIFE_ELEM,
+	SHIELD_ELEM,
+	COLD_ELEM,
+	LIGHTNING_ELEM,
+	DEATH_ELEM,
+	EARTH_ELEM,
+	FIRE_ELEM,
+	STEAM_ELEM,
+	ICE_ELEM
+};
+
 class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement(char name_ ,char canceledBy_ , char canceledBy2_, int rank_ );
+	CElement(int name_ , int canceledBy_ , int canceledBy2_, int rank_ );
 
 	/*
 	@return first opposite element.
 	@example q cancels a
 	*/
-	inline char GetCancelledBy() const //q cancels a
+	inline int GetCancelledBy() const //q cancels a
 	{
 		return cancelledBy;
 	}
@@ -39,12 +55,12 @@ public:
 	@return second opposite element.
 	@example d cancels a
 	*/
-	inline char GetCancelledBy2() const //d cancels a
+	inline int GetCancelledBy2() const //d cancels a
 	{
 		return cancelledBy2;
 	}
 
-	inline char GetName() const
+	inline int GetName() const
 	{
 		return name;
 	}
@@ -79,7 +95,7 @@ public:
 
 	~CElement();
 
-	CElement getCElementByName(char name);
+	CElement getCElementByName(int name);
 
 private:
 	//don't copy elements
