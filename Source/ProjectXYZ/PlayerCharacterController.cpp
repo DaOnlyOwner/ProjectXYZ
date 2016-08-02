@@ -31,48 +31,50 @@ void APlayerCharacterController::SetupInputComponent()
 void APlayerCharacterController::handleWaterKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the water key"));
-	actor->AddElementToQueue(water);
+	/*actor->AddElementToQueue(water);*/
+	actor->TryAddElementToQueue(water);
 }
 void APlayerCharacterController::handleLifeKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the life key"));
-	actor->AddElementToQueue(life);
+	/*actor->AddElementToQueue(life);*/
+	actor->TryAddElementToQueue(life);
 }
 void APlayerCharacterController::handleShieldKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the shield key"));
-	actor->AddElementToQueue(shield);
+	/*actor->AddElementToQueue(shield);*/
+	actor->TryAddElementToQueue(shield);
 }
 void APlayerCharacterController::handleColdKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the cold key"));
-	actor->AddElementToQueue(cold);
+	actor->TryAddElementToQueue(cold);
 }
 void APlayerCharacterController::handleLightningKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the lightning key"));
-	actor->AddElementToQueue(lightning);
+	actor->TryAddElementToQueue(lightning);
 }
 void APlayerCharacterController::handleDeathKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the death key"));
-	actor->AddElementToQueue(death);
+	actor->TryAddElementToQueue(death);
 }
 void APlayerCharacterController::handleEarthKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the Earth key"));
-	actor->AddElementToQueue(earth);
+	actor->TryAddElementToQueue(earth);
 }
 void APlayerCharacterController::handleFireKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the fire key"));
-	actor->AddElementToQueue(fire);
+	actor->TryAddElementToQueue(fire);
 }
 void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 	actor = static_cast<APlayerCharacter*>(this->GetCharacter());
-
 	MovementVector = FVector(0, 0, 0);
 	Waypoint = FVector(0, 0, 0);
 }

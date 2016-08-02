@@ -40,7 +40,7 @@ class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement(int name_ , int canceledBy_ , int canceledBy2_, int rank_ );
+	CElement(int name_ , int canceledBy_ , int canceledBy2_, int rank_ , char letter_);
 
 	/*
 	@return first opposite element.
@@ -63,6 +63,10 @@ public:
 	inline int GetName() const
 	{
 		return name;
+	}
+	inline char GetLetter() const
+	{
+		return letter;
 	}
 
 	inline int GetRank() const
@@ -95,16 +99,17 @@ public:
 
 	~CElement();
 
-	CElement getCElementByName(int name);
+	static CElement GetCElementByName(int name);
+	char name;
 
 private:
 	//don't copy elements
-	CElement (CElement &el) {};
+	CElement () {};
 	
 	char cancelledBy;
 	char cancelledBy2;
-	char name;
 	int rank;
+	char letter;
 };
 
 extern CElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;

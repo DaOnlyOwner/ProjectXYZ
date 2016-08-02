@@ -5,6 +5,7 @@
 #include "CustomGameState.h"
 #include "Spell.h"
 #include "ChargeableSpell.h"
+#include "Element.h"
 #include "UnrealNetwork.h"
 
 
@@ -40,12 +41,10 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 void APlayerCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	FString string;
-	/*for (int i = 0; i < elementQueueSize; i++)
-	{
-		string += elementQueue[i]->GetName();
-	}*/
-	string = FString::FromInt(ElemQueue.element1);
+	FString string = "";
+	string += CElement::GetCElementByName(ElemQueue.element1).GetLetter();
+	string += CElement::GetCElementByName(ElemQueue.element2).GetLetter();
+	string += CElement::GetCElementByName(ElemQueue.element3).GetLetter();
 
 	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string,true, FVector2D{ 5,5 });
 	moveCamera(DeltaTime);
@@ -54,18 +53,87 @@ void APlayerCharacter::Tick( float DeltaTime )
 
 void APlayerCharacter::AddElemToQueue_Implementation(int element_id)
 {
+	/* the elemQueue can only be modified by the server*/
 	UE_LOG(LogTemp, Warning, TEXT("server func"));
-	ElemQueue.element1 = element_id; /* TODO */
+
+	/* if element1 is null the queue is empty */
+	if (ElemQueue.element1 == NULL_ELEM)
+	{
+		ElemQueue.element1 = element_id;
+	}
+	else if (ElemQueue.element2 == NULL_ELEM)
+	{
+		ElemQueue.element2 = element_id;
+	}
+	else if (ElemQueue.element3 == NULL_ELEM)
+	{
+		ElemQueue.element3 = element_id;
+	}
+	else
+	{
+		return; // Queue is full;
+	}
+	return; // the new elemQueue (calculated here, on the server) is replicated to clients.
 }
-bool APlayerCharacter::AddElemToQueue_Validate(int name)
+bool APlayerCharacter::AddElemToQueue_Validate(int element_id)
 {
 	return true;
+}
+
+void APlayerCharacter::RemoveElemFromQueue_Implementation(int element_id)
+{
+	/* the elemQueue can only be modified by the server*/
+	UE_LOG(LogTemp, Warning, TEXT("server func"));
+
+	if (element_id == ElemQueue.element3)
+	{
+		ElemQueue.element3 = NULL_ELEM;
+	}
+	else if(element_id == ElemQueue.element2)
+	{
+		ElemQueue.element2 = ElemQueue.element3; // shift left
+	}
+	else if (element_id == ElemQueue.element1)
+	{
+		ElemQueue.element1 = ElemQueue.element2; // shift left
+		ElemQueue.element2 = ElemQueue.element3; // shift left
+	}
+	else
+	{
+		return; // no such element
+	}
+}
+bool APlayerCharacter::RemoveElemFromQueue_Validate(int element_id)
+{
+	return true;
+}
+void APlayerCharacter::TryAddElementToQueue(CElement & NewElement)
+{
+	/* client-side function */
+
+	CElement e1 = CElement::GetCElementByName(ElemQueue.element1);
+	CElement e2 = CElement::GetCElementByName(ElemQueue.element2);
+	CElement e3 = CElement::GetCElementByName(ElemQueue.element3);
+
+	/* ask the server to add/remove an element*/
+	if (NewElement.Cancels(e1)) RemoveElemFromQueue(e1.GetName());
+	else if (NewElement.Cancels(e2)) RemoveElemFromQueue(e2.GetName());
+	else if (NewElement.Cancels(e3)) RemoveElemFromQueue(e3.GetName());
+	else if (ElemQueue.element3 == NULL_ELEM )
+	{
+		AddElemToQueue(NewElement.GetName());
+	}
+	else
+	{
+		return; /* queue is full */
+	}
+
 }
 
 void APlayerCharacter::AddElementToQueue(CElement &e)
 {
 
-	AddElemToQueue(e.GetName()); /* this is debug */
+	 /* this is debug */
 
 	for (int i = 0; i < elementQueueSize; i++)
 	{

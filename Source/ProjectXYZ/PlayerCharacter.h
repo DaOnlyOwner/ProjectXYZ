@@ -43,8 +43,13 @@ public:
 	void AddElemToQueue_Implementation(int element_id);
 	bool AddElemToQueue_Validate(int element_id);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void RemoveElemFromQueue(int element_id);
+	void RemoveElemFromQueue_Implementation(int element_id);
+	bool RemoveElemFromQueue_Validate(int element_id);
 
 	void AddElementToQueue(CElement &e);
+	void TryAddElementToQueue(CElement &e);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
