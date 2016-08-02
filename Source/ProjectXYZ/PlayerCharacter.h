@@ -38,18 +38,7 @@ public:
 	void ReleaseSpellSelf();
 	void KeyupForward();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void AddElemToQueue(int element_id);
-	void AddElemToQueue_Implementation(int element_id);
-	bool AddElemToQueue_Validate(int element_id);
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void RemoveElemFromQueue(int element_id);
-	void RemoveElemFromQueue_Implementation(int element_id);
-	bool RemoveElemFromQueue_Validate(int element_id);
-
 	void AddElementToQueue(CElement &e);
-	void TryAddElementToQueue(CElement &e);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -72,11 +61,14 @@ public:
 	UPROPERTY(EditAnywhere)
 		float MaxChargeTime = 5.0;
 	
-	UPROPERTY(Replicated)
-		FElemQueueStruct ElemQueue;
+	UPROPERTY(Replicated, ReplicatedUsing=onElemQueueChange)
+		TArray<int> ElemQueue;
+
+	UFUNCTION()
+		void onElemQueueChange();
 
 private:
-
+	
 	CElement *elementQueue[3] = { &nullElement, &nullElement, &nullElement };
 	
 	FVector startOffset;

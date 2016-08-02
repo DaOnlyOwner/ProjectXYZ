@@ -12,10 +12,11 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->AttachTo(RootComponent);
+	ElemQueue.Init(NULL_ELEM, 3);
 }
 
 APlayerCharacter::~APlayerCharacter()
@@ -28,7 +29,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	startOffset = camera->GetRelativeTransform().GetLocation();
-	camera->DetachFromParent(true, true);	
+	camera->DetachFromParent(true, true);
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -38,125 +39,46 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 
 
 // Called every frame
-void APlayerCharacter::Tick( float DeltaTime )
+void APlayerCharacter::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
+	Super::Tick(DeltaTime);
 	FString string = "";
-	string += CElement::GetCElementByName(ElemQueue.element1).GetLetter();
-	string += CElement::GetCElementByName(ElemQueue.element2).GetLetter();
-	string += CElement::GetCElementByName(ElemQueue.element3).GetLetter();
+	string += CElement::GetCElementByName(ElemQueue[0]).GetLetter();
+	string += CElement::GetCElementByName(ElemQueue[1]).GetLetter();
+	string += CElement::GetCElementByName(ElemQueue[2]).GetLetter();
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string,true, FVector2D{ 5,5 });
+	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string, true, FVector2D{ 5,5 });
 	moveCamera(DeltaTime);
-	
-}
-
-void APlayerCharacter::AddElemToQueue_Implementation(int element_id)
-{
-	/* the elemQueue can only be modified by the server*/
-	UE_LOG(LogTemp, Warning, TEXT("server func"));
-
-	/* if element1 is null the queue is empty */
-	if (ElemQueue.element1 == NULL_ELEM)
-	{
-		ElemQueue.element1 = element_id;
-	}
-	else if (ElemQueue.element2 == NULL_ELEM)
-	{
-		ElemQueue.element2 = element_id;
-	}
-	else if (ElemQueue.element3 == NULL_ELEM)
-	{
-		ElemQueue.element3 = element_id;
-	}
-	else
-	{
-		return; // Queue is full;
-	}
-	return; // the new elemQueue (calculated here, on the server) is replicated to clients.
-}
-bool APlayerCharacter::AddElemToQueue_Validate(int element_id)
-{
-	return true;
-}
-
-void APlayerCharacter::RemoveElemFromQueue_Implementation(int element_id)
-{
-	/* the elemQueue can only be modified by the server*/
-	UE_LOG(LogTemp, Warning, TEXT("server func"));
-
-	if (element_id == ElemQueue.element3)
-	{
-		ElemQueue.element3 = NULL_ELEM;
-	}
-	else if(element_id == ElemQueue.element2)
-	{
-		ElemQueue.element2 = ElemQueue.element3; // shift left
-	}
-	else if (element_id == ElemQueue.element1)
-	{
-		ElemQueue.element1 = ElemQueue.element2; // shift left
-		ElemQueue.element2 = ElemQueue.element3; // shift left
-	}
-	else
-	{
-		return; // no such element
-	}
-}
-bool APlayerCharacter::RemoveElemFromQueue_Validate(int element_id)
-{
-	return true;
-}
-void APlayerCharacter::TryAddElementToQueue(CElement & NewElement)
-{
-	/* client-side function */
-
-	CElement e1 = CElement::GetCElementByName(ElemQueue.element1);
-	CElement e2 = CElement::GetCElementByName(ElemQueue.element2);
-	CElement e3 = CElement::GetCElementByName(ElemQueue.element3);
-
-	/* ask the server to add/remove an element*/
-	if (NewElement.Cancels(e1)) RemoveElemFromQueue(e1.GetName());
-	else if (NewElement.Cancels(e2)) RemoveElemFromQueue(e2.GetName());
-	else if (NewElement.Cancels(e3)) RemoveElemFromQueue(e3.GetName());
-	else if (ElemQueue.element3 == NULL_ELEM )
-	{
-		AddElemToQueue(NewElement.GetName());
-	}
-	else
-	{
-		return; /* queue is full */
-	}
 
 }
 
-void APlayerCharacter::AddElementToQueue(CElement &e)
+void APlayerCharacter::AddElementToQueue(CElement & NewElement)
 {
-
-	 /* this is debug */
+	int element_id = NewElement.GetName();
 
 	for (int i = 0; i < elementQueueSize; i++)
 	{
-		if (e.Cancels(*elementQueue[i]))
+		CElement inQueue = CElement::GetCElementByName(ElemQueue[i]);
+		if (NewElement.Cancels(inQueue))
 		{
-			// Remove elementQueue[i] and resize.
-			for (int k = i; k < elementQueueSize - 1; k++)
-			{
-				elementQueue[k] = elementQueue[k + 1];
-			}
+			ElemQueue.RemoveSingle(ElemQueue[i]);
+			ElemQueue.Add(NULL_ELEM);
 			elementQueueSize--;
-			return; // One element can only remove one element from the Q.
-					//TODO: Function to inform that element was removed
+			return;
 		}
 	}
-
 	if (elementQueueSize == 3)
 	{
 		return; // Not more than 3 elements at once.
 	}
 
-	elementQueue[elementQueueSize] = &e;
+	ElemQueue[elementQueueSize] = element_id;
 	elementQueueSize++;
+}
+void APlayerCharacter::onElemQueueChange()
+{
+	UE_LOG(LogTemp, Warning, TEXT("replicated elemQueue changed"));
+	return;
 }
 
 void APlayerCharacter::ReleaseSpellForward()
