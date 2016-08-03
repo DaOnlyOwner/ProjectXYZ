@@ -67,18 +67,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
-
 	UPROPERTY(Replicated)
 		int State = READY;
 
 	UPROPERTY(Replicated)
 		int Status = NORMAL;
 
-	UPROPERTY(Replicated)
-		int State = READY;
-
-	UPROPERTY(Replicated)
-		int Status = NORMAL;
 
 	UFUNCTION()
 		void onElementQueueChange();
