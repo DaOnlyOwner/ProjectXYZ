@@ -7,6 +7,7 @@
 #include "ChargeableSpell.h"
 #include "Element.h"
 #include "UnrealNetwork.h"
+#include "SpellSystemConstants.h"
 
 
 
@@ -17,7 +18,6 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->AttachTo(RootComponent);
-	ElemQueue.Init(NULL_ELEM, 3);
 }
 
 APlayerCharacter::~APlayerCharacter()
@@ -35,7 +35,7 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
-	DOREPLIFETIME(APlayerCharacter, ElemQueue);
+	DOREPLIFETIME(APlayerCharacter, elementQueue);
 }
 
 
@@ -44,39 +44,23 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	FString string = "";
-	string += CElement::GetCElementByName(ElemQueue[0]).GetLetter();
-	string += CElement::GetCElementByName(ElemQueue[1]).GetLetter();
-	string += CElement::GetCElementByName(ElemQueue[2]).GetLetter();
-
+	for(int i = 0; i < elementQueue.Num(); i++)
+		string += CElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
+	
 	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string, true, FVector2D{ 5,5 });
 	moveCamera(DeltaTime);
 
 }
 
-void APlayerCharacter::AddElementToQueue(CElement & NewElement)
+void APlayerCharacter::AddElementToQueue(CElement & newElement)
 {
-	int element_id = NewElement.GetName();
-
-	for (int i = 0; i < elementQueueSize; i++)
-	{
-		CElement inQueue = CElement::GetCElementByName(ElemQueue[i]);
-		if (NewElement.Cancels(inQueue))
-		{
-			ElemQueue.RemoveSingle(ElemQueue[i]);
-			ElemQueue.Add(NULL_ELEM);
-			elementQueueSize--;
-			return;
-		}
-	}
-	if (elementQueueSize == 3)
-	{
-		return; // Not more than 3 elements at once.
-	}
-
-	ElemQueue[elementQueueSize] = element_id;
-	elementQueueSize++;
+	if(!elementQueue.RemoveSingle(newElement.GetCancelledBy()) &&
+	   !elementQueue.RemoveSingle(newElement.GetCancelledBy2()) &&
+	   elementQueue.Num() < 3)
+		elementQueue.Push(newElement.GetID());
 }
-void APlayerCharacter::onElemQueueChange()
+
+void APlayerCharacter::onElementQueueChange()
 {
 	UE_LOG(LogTemp, Warning, TEXT("replicated elemQueue changed"));
 	return;
@@ -84,37 +68,27 @@ void APlayerCharacter::onElemQueueChange()
 
 void APlayerCharacter::ReleaseSpellForward()
 {
-	if (elementQueueSize == 0)
-	{
+    if (elementQueue.Num() == 0)
 		return;
-	}
-
-	TArray<CElement *> in;
-	for (int i = 0; i < elementQueueSize; i++)
-	{
-		in.Add(elementQueue[i]);
-	}
-
-	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(in, false, *this);
+	
+	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false, *this);
 
 	switch (currentSpell->Type)
 	{
-	case Spelltype::Charged:
-		beginCharge();
-		break;
-	default:
-		break;
-
+	  case Spelltype::Charged:
+		 beginCharge();
+		 break;
+	  default:
+		 break;
 	}
 
-	elementQueueSize = 0;
-	
+	elementQueue.Empty();
 }
 
 void APlayerCharacter::beginCharge()
 {
 	// Animations, Particles missing
-	GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MaxChargeTime, 0);
+	GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
 
 }
 

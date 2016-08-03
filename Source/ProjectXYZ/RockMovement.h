@@ -28,13 +28,12 @@ public:
 		SetComponentTickEnabled(false); // This doesn't change anything ): It's still ticking.
 	}
 	
-	void InitializeAndStart(float maxRockDistance, float charge, const FVector & normalizedDirectionVector, float maxCharge);
+	void InitializeAndStart(float maxRockDistance, float charge, const FVector & normalizedDirectionVector);
 
 private:
 	float timeSinceLaunch = 0;
 	FVector startPos;
 	float charge;
-	float maxCharge;
 	float maxRockDistance;
 	FVector normalizedDirectionVector;
 	float height;
