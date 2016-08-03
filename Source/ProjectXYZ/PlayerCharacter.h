@@ -10,16 +10,26 @@
 
 class ASpell;
 
-USTRUCT()
-struct FElemQueueStruct
+UENUM()
+enum CharacterState /* used for delay-related mechanics */
 {
-	GENERATED_USTRUCT_BODY()
-public:
-	uint8 element1;
-	uint8 element2;
-	uint8 element3;
+	READY, /* ready to cast spell */
+	BUSY_CHARGING,
+	BUSY_BEAMING,
+	BUSY_SPRAYING,
+	BUSY_PLACING_SPELL, /* to block movement for a short period of time*/
+	BUSY_KNOCKED, 
+	BUSY_PUSHED,
+	BUSY_SHOCKED /* in lightning storms */
 };
+UENUM()
 
+enum STATUS
+{
+	NORMAL,
+	WET,
+	BURNING
+};
 
 UCLASS()
 class PROJECTXYZ_API APlayerCharacter : public ACharacter
@@ -63,6 +73,12 @@ public:
 	
 	UPROPERTY(Replicated, ReplicatedUsing=onElemQueueChange)
 		TArray<int> ElemQueue;
+
+	UPROPERTY(Replicated)
+		int State = READY;
+
+	UPROPERTY(Replicated)
+		int Status = NORMAL;
 
 	UFUNCTION()
 		void onElemQueueChange();
