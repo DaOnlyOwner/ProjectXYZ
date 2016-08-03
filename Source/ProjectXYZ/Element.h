@@ -17,7 +17,7 @@ Class defining the elements.
 #define LIGHTNING_CHAR 'A'
 #define EARTH_CHAR 'D'
 #define SHIELD_CHAR 'E'
-#define NULL_CHAR 'X'
+#define NULL_CHAR '-'
 #define SELFCAST_CHAR '!'
 
 UENUM()
