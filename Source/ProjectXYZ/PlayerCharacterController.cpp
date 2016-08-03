@@ -31,16 +31,19 @@ void APlayerCharacterController::SetupInputComponent()
 void APlayerCharacterController::handleWaterKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the water key"));
+	/*actor->AddElementToQueue(water);*/
 	actor->AddElementToQueue(water);
 }
 void APlayerCharacterController::handleLifeKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the life key"));
+	/*actor->AddElementToQueue(life);*/
 	actor->AddElementToQueue(life);
 }
 void APlayerCharacterController::handleShieldKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("player pressed the shield key"));
+	/*actor->AddElementToQueue(shield);*/
 	actor->AddElementToQueue(shield);
 }
 void APlayerCharacterController::handleColdKey()
@@ -72,7 +75,6 @@ void APlayerCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 	actor = static_cast<APlayerCharacter*>(this->GetCharacter());
-
 	MovementVector = FVector(0, 0, 0);
 	Waypoint = FVector(0, 0, 0);
 }

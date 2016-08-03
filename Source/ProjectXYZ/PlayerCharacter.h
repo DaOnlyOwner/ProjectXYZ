@@ -7,8 +7,28 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-
 class ASpell;
+
+UENUM()
+enum CharacterState /* used for delay-related mechanics */
+{
+	READY, /* ready to cast spell */
+	BUSY_CHARGING,
+	BUSY_BEAMING,
+	BUSY_SPRAYING,
+	BUSY_PLACING_SPELL, /* to block movement for a short period of time*/
+	BUSY_KNOCKED, 
+	BUSY_PUSHED,
+	BUSY_SHOCKED /* in lightning storms */
+};
+UENUM()
+
+enum STATUS
+{
+	NORMAL,
+	WET,
+	BURNING
+};
 
 UCLASS()
 class PROJECTXYZ_API APlayerCharacter : public ACharacter
@@ -26,7 +46,6 @@ public:
 	void endCharge();
 	void ReleaseSpellSelf();
 	void KeyupForward();
-
 
 	void AddElementToQueue(CElement &e);
 
@@ -48,15 +67,22 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
-	UPROPERTY(EditAnywhere)
-		float MaxChargeTime = 5.0;
-	
+
+	UPROPERTY(Replicated)
+		int State = READY;
+
+	UPROPERTY(Replicated)
+		int Status = NORMAL;
+
+	UFUNCTION()
+		void onElementQueueChange();
 
 private:
+	UPROPERTY(Replicated, ReplicatedUsing=onElementQueueChange)
+		TArray<uint8> elementQueue;
 
-	CElement *elementQueue[3] = {&nullElement, &nullElement, &nullElement};
+	
 	FVector startOffset;
 	ASpell* currentSpell;
-	int elementQueueSize = 0;
 	FTimerHandle chargeHandler;
 };
