@@ -39,7 +39,7 @@ public:
 
 	};
 
-	ASpell * genSpell(TArray<CElement *>& queue, bool selfcast, const APlayerCharacter & player);
+	ASpell * genSpell(TArray<uint8>& queue, bool selfcast, const APlayerCharacter & player);
 
 	UPROPERTY(EditAnywhere)
 		TArray<FString> KeysNormal;

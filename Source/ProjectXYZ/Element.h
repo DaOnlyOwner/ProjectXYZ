@@ -17,36 +17,36 @@ Class defining the elements.
 #define LIGHTNING_CHAR 'A'
 #define EARTH_CHAR 'D'
 #define SHIELD_CHAR 'E'
-#define NULL_CHAR '-'
+#define NULL_CHAR ' '
 #define SELFCAST_CHAR '!'
 
 UENUM()
-enum ELEMENTS
+enum ElementID
 {
-	NULL_ELEM,
-	WATER_ELEM,
-	LIFE_ELEM,
-	SHIELD_ELEM,
-	COLD_ELEM,
-	LIGHTNING_ELEM,
-	DEATH_ELEM,
-	EARTH_ELEM,
-	FIRE_ELEM,
-	STEAM_ELEM,
-	ICE_ELEM
+   SHIELD_ELEM,
+   EARTH_ELEM,
+   LIGHTNING_ELEM,
+   ICE_ELEM,
+   DEATH_ELEM,
+   LIFE_ELEM,
+   STEAM_ELEM,
+   COLD_ELEM,
+   FIRE_ELEM,
+   WATER_ELEM,
+   NULL_ELEM
 };
 
 class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement(int name_ , int canceledBy_ , int canceledBy2_, int rank_ , char letter_);
+	CElement(ElementID id_ , ElementID canceledBy_ , ElementID canceledBy2_,  char letter_);
 
 	/*
 	@return first opposite element.
 	@example q cancels a
 	*/
-	inline int GetCancelledBy() const //q cancels a
+	inline ElementID GetCancelledBy() const //q cancels a
 	{
 		return cancelledBy;
 	}
@@ -55,60 +55,53 @@ public:
 	@return second opposite element.
 	@example d cancels a
 	*/
-	inline int GetCancelledBy2() const //d cancels a
+	inline ElementID GetCancelledBy2() const //d cancels a
 	{
 		return cancelledBy2;
 	}
 
-	inline int GetName() const
+	inline ElementID GetID() const
 	{
-		return name;
+		return id;
 	}
 	inline char GetLetter() const
 	{
 		return letter;
 	}
 
-	inline int GetRank() const
-	{
-		return rank;
-	}
-
 	inline bool Cancels(CElement &el) const
 	{
-	   return name == el.GetCancelledBy() ||
-	     name == el.GetCancelledBy2();
+	   return id == el.GetCancelledBy() ||
+	     id == el.GetCancelledBy2();
 	}
 
 	inline bool isNull() const
 	{
-	   return name == NULL_CHAR;
+	   return id == NULL_ELEM;
 	}
 
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
 
-	inline bool operator==(char c ) const 
+	inline bool operator==(CElement &el) const 
 	{
-		return c == name;
+	   return id == el.GetID();
 	}
 
 	inline bool operator<(const CElement& other) const
 	{
-		return other.GetRank() < rank;
+	   return id < other.GetID();
 	}
 
 	~CElement();
 
-	static CElement GetCElementByName(int name);
-	char name;
-
+	static CElement &GetCElementByID(ElementID id);
 private:
 	//don't copy elements
 	CElement () {};
 	
-	char cancelledBy;
-	char cancelledBy2;
-	int rank;
+	ElementID cancelledBy;
+	ElementID cancelledBy2;
+	ElementID id;
 	char letter;
 };
 

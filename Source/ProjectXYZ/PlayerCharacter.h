@@ -7,7 +7,6 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-
 class ASpell;
 
 UENUM()
@@ -68,11 +67,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
-	UPROPERTY(EditAnywhere)
-		float MaxChargeTime = 5.0;
-	
-	UPROPERTY(Replicated, ReplicatedUsing=onElemQueueChange)
-		TArray<int> ElemQueue;
+
+	UPROPERTY(Replicated)
+		int State = READY;
+
+	UPROPERTY(Replicated)
+		int Status = NORMAL;
 
 	UPROPERTY(Replicated)
 		int State = READY;
@@ -81,14 +81,14 @@ public:
 		int Status = NORMAL;
 
 	UFUNCTION()
-		void onElemQueueChange();
+		void onElementQueueChange();
 
 private:
-	
-	CElement *elementQueue[3] = { &nullElement, &nullElement, &nullElement };
+	UPROPERTY(Replicated, ReplicatedUsing=onElementQueueChange)
+		TArray<uint8> elementQueue;
+
 	
 	FVector startOffset;
 	ASpell* currentSpell;
-	int elementQueueSize = 0;
 	FTimerHandle chargeHandler;
 };
