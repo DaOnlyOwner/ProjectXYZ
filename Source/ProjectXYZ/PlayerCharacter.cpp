@@ -73,7 +73,7 @@ void APlayerCharacter::onElementQueueChange()
 void APlayerCharacter::ReleaseSpellForward()
 {
 	/* ROLE_AutonomousProxy */
-    if (elementQueue.Num() == 0)
+    if (elementQueue.Num() == 0 || State != READY)
 		return;
 
 	ReleaseSpellForwardNet();
