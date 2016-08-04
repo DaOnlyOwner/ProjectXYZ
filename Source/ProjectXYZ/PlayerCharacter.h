@@ -12,6 +12,7 @@ class ASpell;
 UENUM()
 enum CharacterState /* used for delay-related mechanics */
 {
+	NULL_STATE,
 	READY, /* ready to cast spell */
 	BUSY_CHARGING,
 	BUSY_BEAMING,
@@ -84,6 +85,9 @@ public:
 	UPROPERTY(Replicated)
 		int Status = NORMAL;
 
+	UFUNCTION()
+		void setStateToReady();
+
 
 
 	UFUNCTION()
@@ -101,5 +105,5 @@ private:
 	
 	FVector startOffset;
 
-	FTimerHandle chargeHandler;
+	FTimerHandle timerHandler;
 };

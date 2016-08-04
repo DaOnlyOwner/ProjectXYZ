@@ -10,8 +10,6 @@
 #include "SpellSystemConstants.h"
 
 
-
-
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -49,9 +47,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 	moveCamera(DeltaTime);
 }
 
+/* ROLE_AutonomousProxy */
 void APlayerCharacter::AddElementToQueue(CElement & newElement)
 {
-	/*ROLE_AutonomousProxy*/
 	if(!elementQueue.RemoveSingle(newElement.GetCancelledBy()) &&
 		!elementQueue.RemoveSingle(newElement.GetCancelledBy2()) &&
 		elementQueue.Num() < 3)
@@ -70,9 +68,9 @@ void APlayerCharacter::onElementQueueChange()
 	return;
 }
 
+/* ROLE_AutonomousProxy */
 void APlayerCharacter::ReleaseSpellForward()
 {
-	/* ROLE_AutonomousProxy */
     if (elementQueue.Num() == 0 || State != READY)
 		return;
 
@@ -95,7 +93,7 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation()
 	{
 		State = BUSY_CHARGING;
 
-		GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
+		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
 		GEngine->AddOnScreenDebugMessage(15, 2.0f, FColor::Red, "spawned rock");
 	}
 
@@ -110,17 +108,25 @@ void APlayerCharacter::beginCharge()
 	// Animations, Particles missing
 }
 
+/* ROLE_Authority */
 void APlayerCharacter::endCharge()
 {
 	if (State == BUSY_CHARGING)
 	{
-		KeyupForwardNet();
-		State = READY; // State = BUSY_KNOCKED;
+		KeyupForwardNet(); // release the spell
+		State = BUSY_KNOCKED;
+		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::setStateToReady, KNOCKED_DOWN_TIME, 0);
 	}
 }
 
+/* ROLE_Authority */
+void APlayerCharacter::setStateToReady()
+{
+	State = READY;
+}
 void APlayerCharacter::ReleaseSpellSelf()
 {
+
 }
 
 void APlayerCharacter::KeyupForward()
@@ -137,8 +143,8 @@ void APlayerCharacter::KeyupForwardNet_Implementation()
 
 	if (State == BUSY_CHARGING)
 	{
-		float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->chargeHandler);
-		GetWorldTimerManager().ClearTimer(chargeHandler);
+		float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->timerHandler);
+		GetWorldTimerManager().ClearTimer(timerHandler);
 	
 		if (elapsedTime < 0.0f) // when comming from endCharge it somehow has negative value
 		{
@@ -197,7 +203,7 @@ void APlayerCharacter::onStateChange()
 {
 	FString string = "Enforced new state: ";
 	string += FString::SanitizeFloat(State);
-	GEngine->AddOnScreenDebugMessage(19, 5.0f, FColor::Red, string);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
 }
 
 
