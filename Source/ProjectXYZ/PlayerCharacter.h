@@ -88,13 +88,15 @@ public:
 
 	UFUNCTION()
 		void onElementQueueChange();
+	UFUNCTION()
+		void onStateChange();
 
 private:
 
 	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
 		TArray<uint8> elementQueue;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
 		ASpell* currentSpell;
 	
 	FVector startOffset;

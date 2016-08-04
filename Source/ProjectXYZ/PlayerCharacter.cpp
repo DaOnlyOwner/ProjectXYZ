@@ -47,7 +47,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	moveCamera(DeltaTime);
-
 }
 
 void APlayerCharacter::AddElementToQueue(CElement & newElement)
@@ -126,7 +125,7 @@ void APlayerCharacter::ReleaseSpellSelf()
 
 void APlayerCharacter::KeyupForward()
 {
-	if (currentSpell != nullptr && currentSpell->Type == Spelltype::Charged)
+	if (currentSpell != nullptr && State == BUSY_CHARGING && currentSpell->Type == Spelltype::Charged)
 	{
 		KeyupForwardNet();
 	}
@@ -193,6 +192,12 @@ void APlayerCharacter::moveCamera(float DeltaTime)
 		FVector cameraLocationToGo = FMath::VInterpTo(camera->GetComponentLocation(), GetActorLocation() + startOffset + norm*ScreenScale, DeltaTime, SmoothingTime);
 		camera->SetWorldLocation(cameraLocationToGo);
 	}
+}
+void APlayerCharacter::onStateChange()
+{
+	FString string = "Enforced new state: ";
+	string += FString::SanitizeFloat(State);
+	GEngine->AddOnScreenDebugMessage(19, 5.0f, FColor::Red, string);
 }
 
 
