@@ -47,6 +47,11 @@ public:
 	void ReleaseSpellSelf();
 	void KeyupForward();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void UpdateQueue(const TArray<uint8> &newQueue);
+	void UpdateQueue_Implementation(const TArray<uint8> &newQueue);
+	bool UpdateQueue_Validation(const TArray<uint8> &newQueue);
+	
 	void AddElementToQueue(CElement &e);
 
 	// Called when the game starts or when spawned

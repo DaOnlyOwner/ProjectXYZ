@@ -36,6 +36,7 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayerCharacter, elementQueue);
 }
 
@@ -44,25 +45,35 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FString string = "";
-	for(int i = 0; i < elementQueue.Num(); i++)
-		string += CElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
-	
-	GEngine->AddOnScreenDebugMessage(-1, 0.007f, FColor::Red, string, true, FVector2D{ 5,5 });
 	moveCamera(DeltaTime);
 
 }
+void APlayerCharacter::UpdateQueue_Implementation(const TArray<uint8> &newQueue)
+{
+	FString string = "";
+	for (int i = 0; i < elementQueue.Num(); i++)
+		string += CElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
 
+	GEngine->AddOnScreenDebugMessage(10, 2.0f, FColor::Red, string);
+	elementQueue = newQueue;
+}
+bool APlayerCharacter::UpdateQueue_Validate(const TArray<uint8> &newQueue)
+{
+	return true;
+}
 void APlayerCharacter::AddElementToQueue(CElement & newElement)
 {
 	if(!elementQueue.RemoveSingle(newElement.GetCancelledBy()) &&
 	   !elementQueue.RemoveSingle(newElement.GetCancelledBy2()) &&
 	   elementQueue.Num() < 3)
 		elementQueue.Push(newElement.GetID());
+
+	UpdateQueue(elementQueue);
 }
 
 void APlayerCharacter::onElementQueueChange()
 {
+	GEngine->AddOnScreenDebugMessage(11, 2.0f, FColor::Red, "replicated elemQueue changed");
 	UE_LOG(LogTemp, Warning, TEXT("replicated elemQueue changed"));
 	return;
 }
