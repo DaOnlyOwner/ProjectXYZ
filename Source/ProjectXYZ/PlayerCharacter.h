@@ -46,12 +46,17 @@ public:
 	void endCharge();
 	void ReleaseSpellSelf();
 	void KeyupForward();
+	
+	UFUNCTION(Server,Reliable, WithValidation)
+	void ReleaseSpellForwardNet();
+	void ReleaseSpellForwardNet_Implementation();
+	bool ReleaseSpellForwardNet_Validate();
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void UpdateQueue(const TArray<uint8> &newQueue);
-	void UpdateQueue_Implementation(const TArray<uint8> &newQueue);
-	bool UpdateQueue_Validation(const TArray<uint8> &newQueue);
-	
+	void KeyupForwardNet();
+	void KeyupForwardNet_Implementation();
+	bool KeyupForward_Validate();
+
 	void AddElementToQueue(CElement &e);
 
 	// Called when the game starts or when spawned
@@ -79,15 +84,19 @@ public:
 		int Status = NORMAL;
 
 
+
 	UFUNCTION()
 		void onElementQueueChange();
 
 private:
-	UPROPERTY(Replicated, ReplicatedUsing=onElementQueueChange)
+
+	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
 		TArray<uint8> elementQueue;
 
+	UPROPERTY(Replicated)
+		ASpell* currentSpell;
 	
 	FVector startOffset;
-	ASpell* currentSpell;
+
 	FTimerHandle chargeHandler;
 };

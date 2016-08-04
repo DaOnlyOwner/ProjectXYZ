@@ -5,14 +5,17 @@
 #include "PlayerCharacter.h"
 
 // I might replace that with a better working solution. Right now its just too ugly
-ASpell* ACustomGameState::genSpell(TArray<uint8>& queue, bool selfcast, const APlayerCharacter& player)
+ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 {
+	ASpell * spell;
+	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["D"]));
+	return spell;
 
 	//Replace
-        int32 waterIndex = queue.Find(WATER_CHAR);
-        if (waterIndex != INDEX_NONE)
+	int32 waterIndex = queue.Find(WATER_ELEM);
+	if (waterIndex != INDEX_NONE)
 	{
-	        int32 fireIndex = queue.Find(FIRE_CHAR);
+		int32 fireIndex = queue.Find(FIRE_ELEM);
 		if (fireIndex != INDEX_NONE)
 		{
 			queue.RemoveAtSwap(fireIndex);
@@ -22,7 +25,7 @@ ASpell* ACustomGameState::genSpell(TArray<uint8>& queue, bool selfcast, const AP
 
 		else
 		{
-			int32 coldIndex = queue.Find(COLD_CHAR);
+			int32 coldIndex = queue.Find(COLD_ELEM);
 			if (coldIndex != INDEX_NONE)
 			{
 				queue.RemoveAtSwap(coldIndex);
@@ -33,25 +36,27 @@ ASpell* ACustomGameState::genSpell(TArray<uint8>& queue, bool selfcast, const AP
 	}
 
 	//Sort
-	queue.Sort();
-	FString lookupstring = selfcast ? "!" : "";
-	ASpell* spell;
+	/*queue.Sort([](const uint8& A, const uint8& B) {
+		return A < B;
+	});*/
 
-	if (queue[0] == SHIELD_ELEM)
+	FString lookupstring = selfcast ? "!" : "";
+
+	/*if (queue[0] == SHIELD_ELEM)
 	{
 		lookupstring += SHIELD_CHAR; 
 		if (queue.Num() > 1)
 			lookupstring += CElement::GetCElementByID((ElementID)queue[1]).GetLetter();
 	}
-
 	else
-	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());
+	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());*/
 
-	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
+	/*spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
 	
 	if(spell)
-	   spell->SetSpellElements(queue);
+	   spell->SetSpellElements(queue);*/
 
+	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
 	return spell;
 }
 

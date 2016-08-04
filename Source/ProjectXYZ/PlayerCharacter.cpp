@@ -38,8 +38,8 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayerCharacter, elementQueue);
+	DOREPLIFETIME(APlayerCharacter, currentSpell);
 }
-
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
@@ -48,27 +48,19 @@ void APlayerCharacter::Tick(float DeltaTime)
 	moveCamera(DeltaTime);
 
 }
-void APlayerCharacter::UpdateQueue_Implementation(const TArray<uint8> &newQueue)
-{
-	FString string = "";
-	for (int i = 0; i < elementQueue.Num(); i++)
-		string += CElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
 
-	GEngine->AddOnScreenDebugMessage(10, 2.0f, FColor::Red, string);
-	elementQueue = newQueue;
-}
-bool APlayerCharacter::UpdateQueue_Validate(const TArray<uint8> &newQueue)
-{
-	return true;
-}
 void APlayerCharacter::AddElementToQueue(CElement & newElement)
 {
+	/*ROLE_AutonomousProxy*/
 	if(!elementQueue.RemoveSingle(newElement.GetCancelledBy()) &&
-	   !elementQueue.RemoveSingle(newElement.GetCancelledBy2()) &&
-	   elementQueue.Num() < 3)
+		!elementQueue.RemoveSingle(newElement.GetCancelledBy2()) &&
+		elementQueue.Num() < 3)
 		elementQueue.Push(newElement.GetID());
 
-	UpdateQueue(elementQueue);
+	FString string = "My Queue: ";
+	for (int i = 0; i < elementQueue.Num(); i++)
+		string += CElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
+	GEngine->AddOnScreenDebugMessage(13, 5.0f, FColor::Red, string);
 }
 
 void APlayerCharacter::onElementQueueChange()
@@ -80,60 +72,71 @@ void APlayerCharacter::onElementQueueChange()
 
 void APlayerCharacter::ReleaseSpellForward()
 {
+	/* ROLE_AutonomousProxy */
     if (elementQueue.Num() == 0)
 		return;
-	
-	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false, *this);
 
-	switch (currentSpell->Type)
+	ReleaseSpellForwardNet();
+	elementQueue.Empty();
+}
+void APlayerCharacter::ReleaseSpellForwardNet_Implementation()
+{
+	/* ROLE_authority */
+	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "right click DOWN");
+
+	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false);
+
+	if (currentSpell->Type == Spelltype::Charged)
 	{
-	  case Spelltype::Charged:
-		 beginCharge();
-		 break;
-	  default:
-		 break;
+		GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
+		GEngine->AddOnScreenDebugMessage(15, 2.0f, FColor::Red, "spawned rock");
 	}
 
-	elementQueue.Empty();
+	
+}
+bool APlayerCharacter::ReleaseSpellForwardNet_Validate()
+{
+	return true;
 }
 
 void APlayerCharacter::beginCharge()
 {
 	// Animations, Particles missing
-	GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
-
 }
 
 void APlayerCharacter::endCharge()
 {
-	float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->chargeHandler);
-	GetWorldTimerManager().ClearTimer(chargeHandler);
-	static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
-	currentSpell->StartBehavior(*this);
+
 }
 
 void APlayerCharacter::ReleaseSpellSelf()
 {
-
 }
 
 void APlayerCharacter::KeyupForward()
 {
-	if (currentSpell != nullptr)
+	if (currentSpell != nullptr && currentSpell->Type == Spelltype::Charged)
 	{
-		switch (currentSpell->Type)
-		{
-		case Spelltype::Charged:
-			endCharge();
-			currentSpell = nullptr;
-			break;
-		default:
-			currentSpell->EndBehavior(); 
-			currentSpell = nullptr;
-		}
+		KeyupForwardNet();
 	}
 }
+void APlayerCharacter::KeyupForwardNet_Implementation()
+{
+	/* ROLE_authority */
+	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "right click UP ");
 
+	float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->chargeHandler);
+	GetWorldTimerManager().ClearTimer(chargeHandler);
+
+	GEngine->AddOnScreenDebugMessage(16, 5.0f,  FColor::Red, FString::SanitizeFloat(elapsedTime));
+
+	static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
+	currentSpell->StartBehavior(*this);
+}
+bool APlayerCharacter::KeyupForwardNet_Validate()
+{
+	return true;
+}
 
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
