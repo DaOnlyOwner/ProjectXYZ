@@ -16,6 +16,7 @@ enum CharacterState /* used for delay-related mechanics */
 	BUSY_CHARGING,
 	BUSY_BEAMING,
 	BUSY_SPRAYING,
+	BUSY_HEALING,
 	BUSY_PLACING_SPELL, /* to block movement for a short period of time*/
 	BUSY_KNOCKED, 
 	BUSY_PUSHED,

@@ -39,6 +39,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlayerCharacter, elementQueue);
 	DOREPLIFETIME(APlayerCharacter, currentSpell);
+	DOREPLIFETIME(APlayerCharacter, State);
 }
 
 // Called every frame
@@ -79,20 +80,26 @@ void APlayerCharacter::ReleaseSpellForward()
 	ReleaseSpellForwardNet();
 	elementQueue.Empty();
 }
+
+/* ROLE_authority */
 void APlayerCharacter::ReleaseSpellForwardNet_Implementation()
 {
-	/* ROLE_authority */
 	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "right click DOWN");
+	
+	if (State != READY) {// player is busy doing something else, can't cast anything right now.
+		return;
+	}
 
 	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false);
 
 	if (currentSpell->Type == Spelltype::Charged)
 	{
+		State = BUSY_CHARGING;
+
 		GetWorldTimerManager().SetTimer(chargeHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
 		GEngine->AddOnScreenDebugMessage(15, 2.0f, FColor::Red, "spawned rock");
 	}
 
-	
 }
 bool APlayerCharacter::ReleaseSpellForwardNet_Validate()
 {
@@ -106,7 +113,11 @@ void APlayerCharacter::beginCharge()
 
 void APlayerCharacter::endCharge()
 {
-
+	if (State == BUSY_CHARGING)
+	{
+		KeyupForwardNet();
+		State = READY; // State = BUSY_KNOCKED;
+	}
 }
 
 void APlayerCharacter::ReleaseSpellSelf()
@@ -120,18 +131,35 @@ void APlayerCharacter::KeyupForward()
 		KeyupForwardNet();
 	}
 }
+/* ROLE_authority */
 void APlayerCharacter::KeyupForwardNet_Implementation()
 {
-	/* ROLE_authority */
 	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "right click UP ");
 
-	float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->chargeHandler);
-	GetWorldTimerManager().ClearTimer(chargeHandler);
+	if (State == BUSY_CHARGING)
+	{
+		float elapsedTime = GetWorldTimerManager().GetTimerElapsed(this->chargeHandler);
+		GetWorldTimerManager().ClearTimer(chargeHandler);
+	
+		if (elapsedTime < 0.0f) // when comming from endCharge it somehow has negative value
+		{
+			elapsedTime = MAX_CHARGE_TIME;
+		}
+		State = READY;
 
-	GEngine->AddOnScreenDebugMessage(16, 5.0f,  FColor::Red, FString::SanitizeFloat(elapsedTime));
+		GEngine->AddOnScreenDebugMessage(16, 5.0f,  FColor::Red, FString::SanitizeFloat(elapsedTime));
+		static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
+		currentSpell->StartBehavior(*this);
+	}
+	else if (State == BUSY_BEAMING || State == BUSY_SPRAYING)
+	{
+		currentSpell->EndBehavior();
+	}
+	else if (State == BUSY_HEALING)
+	{
+		// stop healing
+	}
 
-	static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
-	currentSpell->StartBehavior(*this);
 }
 bool APlayerCharacter::KeyupForwardNet_Validate()
 {
@@ -142,7 +170,6 @@ bool APlayerCharacter::KeyupForwardNet_Validate()
 void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
-
 }
 
 void APlayerCharacter::moveCamera(float DeltaTime)
@@ -158,9 +185,6 @@ void APlayerCharacter::moveCamera(float DeltaTime)
 	controller->GetViewportSize(x, y);
 	if (controller->GetMousePosition(xM, yM))
 	{
-
-
-
 		float normX = (xM / (float)x - .5f);
 		float normY = -1 * (yM / (float)y - .5f);
 
