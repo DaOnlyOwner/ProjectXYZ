@@ -117,7 +117,7 @@ void APlayerCharacter::endCharge()
 		KeyupForwardNet(); // release the spell
 		State = BUSY_KNOCKED;
 		/*DisableInput(Cast<APlayerCharacterController>(this->GetController()));*/
-		bReplicateMovement = false;
+		SetReplicateMovement(false);
 		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::setStateToReady, KNOCKED_DOWN_TIME, 0);
 	}
 }
@@ -126,7 +126,7 @@ void APlayerCharacter::endCharge()
 void APlayerCharacter::setStateToReady()
 {
 	State = READY;
-	bReplicateMovement = true;
+	SetReplicateMovement(true);
 	
 }
 void APlayerCharacter::ReleaseSpellSelf()
