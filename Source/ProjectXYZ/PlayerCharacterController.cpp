@@ -97,7 +97,7 @@ void APlayerCharacterController::SelfCast()
 //This is just dirty
 void APlayerCharacterController::Tick(float DeltaSeconds)
 {
-	if (actor != nullptr)
+	if (actor != nullptr && (actor->State == READY || actor->State == BUSY_CHARGING))
 	{
 		MoveToWaypoint();
 		TurnToWaypoint(DeltaSeconds);
