@@ -27,7 +27,7 @@ void ARockSpell::StartBehavior(const APlayerCharacter& player)
 	this->SetActorEnableCollision(true);
 	RockMesh->Activate(true);
 	SetActorLocation(player.GetActorLocation() + player.GetActorForwardVector() * 100,false,(FHitResult*)nullptr,ETeleportType::TeleportPhysics);
-	movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, player.GetActorForwardVector(), player.MaxChargeTime);
+	movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, player.GetActorForwardVector());
 
 }
 

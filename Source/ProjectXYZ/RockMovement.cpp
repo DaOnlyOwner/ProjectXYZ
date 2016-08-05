@@ -2,6 +2,7 @@
 
 #include "ProjectXYZ.h"
 #include "RockMovement.h"
+#include "SpellSystemConstants.h"
 
 #define ROCK_FALL_TIME (1/4.0f)
 
@@ -20,16 +21,13 @@ void URockMovement::TickComponent(float DeltaTime, enum ELevelTick TickType, FAc
 		FVector newPos = horizontal_pos(timeSinceLaunch);
 		newPos.Z = vertical_pos(timeSinceLaunch);
 		UpdatedComponent->SetWorldLocation(newPos);
-
-		UE_LOG(LogTemp, Warning, TEXT("Tick"));
 	}
 }
 
-void URockMovement::InitializeAndStart(float maxRockDistance, float charge, const FVector & normalizedDirectionVector, float maxCharge)
+void URockMovement::InitializeAndStart(float maxRockDistance, float charge, const FVector & normalizedDirectionVector)
 {
 	this->charge = charge;
 	this->normalizedDirectionVector = normalizedDirectionVector;
-	this->maxCharge = maxCharge;
 	this->height = this->UpdatedComponent->GetComponentLocation().Z;
 	this->maxRockDistance = maxRockDistance;
 	this->startPos = UpdatedComponent->GetComponentLocation();
