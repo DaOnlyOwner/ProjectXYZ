@@ -8,7 +8,7 @@
 void ASpell::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
