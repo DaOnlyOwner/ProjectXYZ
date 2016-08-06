@@ -56,7 +56,12 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void KeyupForwardNet();
 	void KeyupForwardNet_Implementation();
-	bool KeyupForward_Validate();
+	bool KeyupForwardNet_Validate();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ReleaseSpellSelfNet(const TArray<uint8> &elementQueue);
+	void ReleaseSpellSelfNet_Implementation(const TArray<uint8> &elementQueue);
+	bool ReleaseSpellSelfNet_Validate(const TArray<uint8> &elementQueue);
 
 	void AddElementToQueue(CElement &e);
 	int QueueToSpellType(TArray<uint8> elementQueue);

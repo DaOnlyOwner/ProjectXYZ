@@ -13,7 +13,9 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
 
 	ASpell * spell;
-	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["F"]));
+	FString lookupstring = selfcast ? "!" : "";
+
+	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["!F"]));
 	spell->SetSpellElements(queue);
 	return spell;
 
@@ -46,7 +48,7 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 		return A < B;
 	});*/
 
-	FString lookupstring = selfcast ? "!" : "";
+
 
 	/*if (queue[0] == SHIELD_ELEM)
 	{

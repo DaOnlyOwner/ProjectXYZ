@@ -6,6 +6,7 @@
 #include "Spell.h"
 #include "ChargeableSpell.h" 
 #include "SpraySpell.h"
+#include "AoESpell.h"
 #include "Element.h"
 #include "UnrealNetwork.h"
 #include "SpellSystemConstants.h"
@@ -19,6 +20,7 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->AttachTo(RootComponent);
+	State = READY;
 }
 
 APlayerCharacter::~APlayerCharacter()
@@ -153,8 +155,50 @@ void APlayerCharacter::setStateToReady()
 }
 void APlayerCharacter::ReleaseSpellSelf()
 {
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Red, "middle click DOWN - client", true);
+
+	if (elementQueue.Num() == 0 || State != READY)
+		return;
+	ReleaseSpellSelfNet(elementQueue);
+	elementQueue.Empty();
+}
+void APlayerCharacter::ReleaseSpellSelfNet_Implementation(const TArray<uint8> & elemQueue)
+{
+	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "middle click DOWN");
+
+	if (State != READY) {// player is busy doing something else, can't cast anything right now.
+		return;
+	}
+		
+	ServerSideElementQueue = elemQueue;
+	State = BUSY_PLACING_SPELL;
+	if (elemQueue.Contains(SHIELD_ELEM))
+	{
+		if (elemQueue.Num() > 2)
+		{
+			// it's a ward
+		}
+		else
+		{
+			// it's a dome shield
+		}
+	}
+	else
+	{
+		// it's an AoE
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, true);
+		static_cast<AAoESpell*>(currentSpell)->StartBehavior(*this);
+		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::setStateToReady, 0.5f, 0);
+
+	}
+
 
 }
+bool APlayerCharacter::ReleaseSpellSelfNet_Validate(const TArray<uint8> & elemQueue)
+{
+	return true;
+}
+
 
 void APlayerCharacter::KeyupForward()
 {
