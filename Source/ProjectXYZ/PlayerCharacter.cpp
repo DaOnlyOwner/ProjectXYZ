@@ -4,7 +4,8 @@
 #include "PlayerCharacter.h"
 #include "CustomGameState.h"
 #include "Spell.h"
-#include "ChargeableSpell.h"
+#include "ChargeableSpell.h" 
+#include "SpraySpell.h"
 #include "Element.h"
 #include "UnrealNetwork.h"
 #include "SpellSystemConstants.h"
@@ -68,12 +69,19 @@ void APlayerCharacter::onElementQueueChange()
 	UE_LOG(LogTemp, Warning, TEXT("replicated elemQueue changed"));
 	return;
 }
-/* ROLE_authority */
+/* ROLE_authority && ROLE_AutonomousProxy*/
 int APlayerCharacter::QueueToSpellType(TArray<uint8> elemQueue)
 {
-	if (elemQueue.Contains(EARTH_ELEM) && !elemQueue.Contains(SHIELD_ELEM))
-		return Charged;
-	return None;
+	if (!elemQueue.Contains(SHIELD_ELEM))
+	{
+		if (elemQueue.Contains(EARTH_ELEM))
+			return Charged;
+		else if (((elemQueue.Contains(DEATH_ELEM) || elemQueue.Contains(LIFE_ELEM))) /* beam*/
+			|| (!elemQueue.Contains(LIGHTNING_ELEM) && !elemQueue.Contains(EARTH_ELEM))) /* spray */
+			return Channeled;
+		return Burst;
+	}
+	return Burst;
 }
 
 /* ROLE_AutonomousProxy */
@@ -103,7 +111,10 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8>
 	else if (QueueToSpellType(elemQueue) == Channeled)
 	{
 		State = BUSY_CHANNELING;
-		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHANNEL_TIME, 0);
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, false);
+		currentSpell->SetOwner(this);
+		currentSpell->AttachRootComponentToActor(this, NAME_None, EAttachLocation::KeepRelativeOffset);
+		/*GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHANNEL_TIME, 0);*/
 	}
 }
 bool APlayerCharacter::ReleaseSpellForwardNet_Validate(const TArray<uint8> & elemQueue)
@@ -147,7 +158,8 @@ void APlayerCharacter::ReleaseSpellSelf()
 
 void APlayerCharacter::KeyupForward()
 {
-	if (QueueToSpellType(elementQueue) == Charged && State == BUSY_CHARGING)
+	if ((QueueToSpellType(elementQueue) == Charged && State == BUSY_CHARGING)
+		|| QueueToSpellType(elementQueue) == Channeled && State == BUSY_CHANNELING )
 	{
 		KeyupForwardNet();
 	}
@@ -177,6 +189,7 @@ void APlayerCharacter::KeyupForwardNet_Implementation()
 	else if (State == BUSY_CHANNELING)
 	{
 		currentSpell->EndBehavior();
+		State = READY;
 	}
 	else if (State == BUSY_HEALING)
 	{
@@ -219,13 +232,13 @@ void APlayerCharacter::moveCamera(float DeltaTime)
 }
 void APlayerCharacter::onStateChange()
 {
-	FString string = "Enforced new state: ";
+	/*FString string = "Enforced new state: ";
 	string += FString::SanitizeFloat(State);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);*/
 }
 void APlayerCharacter::onCurrentSpellChange()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, "current spell changed", true);
+	/*GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, "current spell changed", true);*/
 }
 
 

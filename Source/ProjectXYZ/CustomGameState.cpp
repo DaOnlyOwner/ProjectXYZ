@@ -13,7 +13,8 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
 
 	ASpell * spell;
-	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["D"]));
+	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["F"]));
+	spell->SetSpellElements(queue);
 	return spell;
 
 	//Replace
