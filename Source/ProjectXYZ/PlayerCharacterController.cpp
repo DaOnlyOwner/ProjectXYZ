@@ -19,6 +19,8 @@ void APlayerCharacterController::SetupInputComponent()
 	InputComponent->BindAction("ForwardCast", IE_Pressed, this, &APlayerCharacterController::ForwardCast);
 	InputComponent->BindAction("ForwardCast", IE_Released, this, &APlayerCharacterController::ForwardCastRelease);
 
+	InputComponent->BindAction("SelfCast", IE_Pressed, this, &APlayerCharacterController::SelfCast);
+
 	InputComponent->BindAction("handleWater", IE_Pressed, this, &APlayerCharacterController::handleWaterKey);
 	InputComponent->BindAction("handleLife", IE_Pressed, this, &APlayerCharacterController::handleLifeKey);
 	InputComponent->BindAction("handleShield", IE_Pressed, this, &APlayerCharacterController::handleShieldKey);
