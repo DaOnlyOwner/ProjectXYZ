@@ -48,10 +48,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 	moveCamera(DeltaTime);
 }
 
-int APlayerCharacter::QueueToSpellType()
-{
-	return Charged;
-}
 /* ROLE_AutonomousProxy */
 void APlayerCharacter::AddElementToQueue(CElement & newElement)
 {
@@ -68,23 +64,28 @@ void APlayerCharacter::AddElementToQueue(CElement & newElement)
 
 void APlayerCharacter::onElementQueueChange()
 {
-	GEngine->AddOnScreenDebugMessage(11, 2.0f, FColor::Red, "replicated elemQueue changed");
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Red, "replicated elemQueue changed", true);
 	UE_LOG(LogTemp, Warning, TEXT("replicated elemQueue changed"));
 	return;
+}
+/* ROLE_authority */
+int APlayerCharacter::QueueToSpellType(TArray<uint8> elemQueue)
+{
+	if (elemQueue.Contains(EARTH_ELEM) && !elemQueue.Contains(SHIELD_ELEM))
+		return Charged;
+	return None;
 }
 
 /* ROLE_AutonomousProxy */
 void APlayerCharacter::ReleaseSpellForward()
 {
-    if (elementQueue.Num() == 0 || State != READY)
+	if (elementQueue.Num() == 0 || State != READY)
 		return;
-
-	ReleaseSpellForwardNet();
-	
+	ReleaseSpellForwardNet(elementQueue);
 }
 
 /* ROLE_authority */
-void APlayerCharacter::ReleaseSpellForwardNet_Implementation()
+void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8> & elemQueue)
 {
 	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "right click DOWN");
 	
@@ -92,15 +93,20 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation()
 		return;
 	}
 
-	if (QueueToSpellType() == Charged)
+	ServerSideElementQueue = elemQueue;
+
+	if (QueueToSpellType(elemQueue) == Charged)
 	{
 		State = BUSY_CHARGING;
-
 		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
-		GEngine->AddOnScreenDebugMessage(15, 2.0f, FColor::Red, "spawned rock");
+	}
+	else if (QueueToSpellType(elemQueue) == Channeled)
+	{
+		State = BUSY_CHANNELING;
+		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHANNEL_TIME, 0);
 	}
 }
-bool APlayerCharacter::ReleaseSpellForwardNet_Validate()
+bool APlayerCharacter::ReleaseSpellForwardNet_Validate(const TArray<uint8> & elemQueue)
 {
 	return true;
 }
@@ -117,9 +123,13 @@ void APlayerCharacter::endCharge()
 	{
 		KeyupForwardNet(); // release the spell
 		State = BUSY_KNOCKED;
-		/*DisableInput(Cast<APlayerCharacterController>(this->GetController()));*/
 		SetReplicateMovement(false);
 		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::setStateToReady, KNOCKED_DOWN_TIME, 0);
+	}
+	else if (State == BUSY_CHANNELING)
+	{
+		KeyupForwardNet();
+		State = READY;
 	}
 }
 
@@ -137,7 +147,7 @@ void APlayerCharacter::ReleaseSpellSelf()
 
 void APlayerCharacter::KeyupForward()
 {
-	if (QueueToSpellType() == Charged && State == BUSY_CHARGING)
+	if (QueueToSpellType(elementQueue) == Charged && State == BUSY_CHARGING)
 	{
 		KeyupForwardNet();
 	}
@@ -159,12 +169,12 @@ void APlayerCharacter::KeyupForwardNet_Implementation()
 		}
 		State = READY;
 		
-		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false);
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, false);
 		GEngine->AddOnScreenDebugMessage(16, 5.0f,  FColor::Red, FString::SanitizeFloat(elapsedTime));
 		static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
 		static_cast<AChargeableSpell*>(currentSpell)->StartBehavior(*this);
 	}
-	else if (State == BUSY_BEAMING || State == BUSY_SPRAYING)
+	else if (State == BUSY_CHANNELING)
 	{
 		currentSpell->EndBehavior();
 	}

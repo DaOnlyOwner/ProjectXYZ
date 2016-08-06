@@ -7,6 +7,11 @@
 // I might replace that with a better working solution. Right now its just too ugly
 ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 {
+	FString string = "GENSPELL: ";
+	for (int i = 0; i < queue.Num(); i++)
+		string += CElement::GetCElementByID((ElementID)queue[i]).GetLetter();
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+
 	ASpell * spell;
 	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["D"]));
 	return spell;

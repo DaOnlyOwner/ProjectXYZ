@@ -9,9 +9,10 @@
 
 enum Spelltype
 {
-	Charged = 0,
-	Channeled = 1,
-	Burst = 2
+	None = 0,
+	Charged = 1,
+	Channeled = 2,
+	Burst = 3
 };
 
 UCLASS()

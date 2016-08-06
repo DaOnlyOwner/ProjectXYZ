@@ -15,8 +15,7 @@ enum CharacterState /* used for delay-related mechanics */
 	NULL_STATE,
 	READY, /* ready to cast spell */
 	BUSY_CHARGING,
-	BUSY_BEAMING,
-	BUSY_SPRAYING,
+	BUSY_CHANNELING, /* beam and sprays */
 	BUSY_HEALING,
 	BUSY_PLACING_SPELL, /* to block movement for a short period of time*/
 	BUSY_KNOCKED, 
@@ -50,9 +49,9 @@ public:
 	void KeyupForward();
 	
 	UFUNCTION(Server,Reliable, WithValidation)
-	void ReleaseSpellForwardNet();
-	void ReleaseSpellForwardNet_Implementation();
-	bool ReleaseSpellForwardNet_Validate();
+	void ReleaseSpellForwardNet(const TArray<uint8>  &elementQueue);
+	void ReleaseSpellForwardNet_Implementation(const TArray<uint8> &elementQueue);
+	bool ReleaseSpellForwardNet_Validate(const TArray<uint8> &elementQueue);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void KeyupForwardNet();
@@ -60,7 +59,7 @@ public:
 	bool KeyupForward_Validate();
 
 	void AddElementToQueue(CElement &e);
-	int QueueToSpellType();
+	int QueueToSpellType(TArray<uint8> elementQueue);
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -101,6 +100,9 @@ private:
 
 	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
 		TArray<uint8> elementQueue;
+
+	UPROPERTY()
+		TArray<uint8> ServerSideElementQueue;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
 		ASpell* currentSpell;
