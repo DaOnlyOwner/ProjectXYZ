@@ -15,10 +15,6 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 	ASpell * spell;
 	FString lookupstring = selfcast ? "!" : "";
 
-	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["!F"]));
-	spell->SetSpellElements(queue);
-	return spell;
-
 	//Replace
 	int32 waterIndex = queue.Find(WATER_ELEM);
 	if (waterIndex != INDEX_NONE)
@@ -43,28 +39,22 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 		}
 	}
 
-	//Sort
-	/*queue.Sort([](const uint8& A, const uint8& B) {
-		return A < B;
-	});*/
+	queue.Sort();
 
-
-
-	/*if (queue[0] == SHIELD_ELEM)
+	if (queue[0] == SHIELD_ELEM)
 	{
 		lookupstring += SHIELD_CHAR; 
 		if (queue.Num() > 1)
 			lookupstring += CElement::GetCElementByID((ElementID)queue[1]).GetLetter();
 	}
 	else
-	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());*/
-
-	/*spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
-	
-	if(spell)
-	   spell->SetSpellElements(queue);*/
+	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());
 
 	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
+	
+	if(spell)
+	   spell->SetSpellElements(queue);
+
 	return spell;
 }
 

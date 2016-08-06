@@ -22,7 +22,6 @@ class PROJECTXYZ_API ASpell : public AActor
 	
 public:	
 
-	Spelltype Type;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	

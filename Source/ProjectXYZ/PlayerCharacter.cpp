@@ -114,7 +114,7 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8>
 	{
 		State = BUSY_CHANNELING;
 		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, false);
-		currentSpell->SetOwner(this);
+		/*currentSpell->SetOwner(this);*/
 		currentSpell->AttachRootComponentToActor(this, NAME_None, EAttachLocation::KeepRelativeOffset);
 		/*GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHANNEL_TIME, 0);*/
 	}
