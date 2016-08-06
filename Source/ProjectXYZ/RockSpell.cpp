@@ -5,15 +5,13 @@
 
 ARockSpell::ARockSpell()
 {
-	Type = Spelltype::Charged;
 	RockMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RockMesh"));
-	RootComponent = RockMesh;
+	RockMesh->OnComponentBeginOverlap.AddDynamic(this, &ARockSpell::OnOverlapBegin);
+	RockMesh->Activate(true);
+
 	movementComponent = CreateDefaultSubobject<URockMovement>(TEXT("RockMovementComponent"));
 	movementComponent->SetUpdatedComponent(RootComponent);
 	movementComponent->bIsActive = false;
-
-	this->SetActorEnableCollision(false);
-	this->SetActorHiddenInGame(true);
 }
 
 ARockSpell::~ARockSpell()
@@ -23,17 +21,16 @@ ARockSpell::~ARockSpell()
 
 void ARockSpell::StartBehavior(const APlayerCharacter& player)
 {
-	this->SetActorHiddenInGame(false);
-	this->SetActorEnableCollision(true);
-	RockMesh->Activate(true);
 	SetActorLocation(player.GetActorLocation() + player.GetActorForwardVector() * 100,false,(FHitResult*)nullptr,ETeleportType::TeleportPhysics);
 	movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, player.GetActorForwardVector());
-
 }
 
 void ARockSpell::EndBehavior()
 {
 	
 }
-
+void ARockSpell::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Red, "OVERLAP", true);
+}
 

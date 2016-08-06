@@ -7,9 +7,13 @@
 // I might replace that with a better working solution. Right now its just too ugly
 ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 {
+	FString string = "GENSPELL: ";
+	for (int i = 0; i < queue.Num(); i++)
+		string += CElement::GetCElementByID((ElementID)queue[i]).GetLetter();
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+
 	ASpell * spell;
-	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict["D"]));
-	return spell;
+	FString lookupstring = selfcast ? "!" : "";
 
 	//Replace
 	int32 waterIndex = queue.Find(WATER_ELEM);
@@ -35,28 +39,22 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 		}
 	}
 
-	//Sort
-	/*queue.Sort([](const uint8& A, const uint8& B) {
-		return A < B;
-	});*/
+	queue.Sort();
 
-	FString lookupstring = selfcast ? "!" : "";
-
-	/*if (queue[0] == SHIELD_ELEM)
+	if (queue[0] == SHIELD_ELEM)
 	{
 		lookupstring += SHIELD_CHAR; 
 		if (queue.Num() > 1)
 			lookupstring += CElement::GetCElementByID((ElementID)queue[1]).GetLetter();
 	}
 	else
-	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());*/
-
-	/*spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
-	
-	if(spell)
-	   spell->SetSpellElements(queue);*/
+	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());
 
 	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
+	
+	if(spell)
+	   spell->SetSpellElements(queue);
+
 	return spell;
 }
 
