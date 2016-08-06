@@ -3,19 +3,19 @@
 #include "ProjectXYZ.h"
 #include "Element.h"
 
-CElement steam(STEAM_CHAR, NULL_CHAR, NULL_CHAR, 4);
-CElement ice(ICE_CHAR, NULL_CHAR, NULL_CHAR, 7);
-CElement water(WATER_CHAR, LIGHTNING_CHAR, EARTH_CHAR, 1);
-CElement fire(FIRE_CHAR, COLD_CHAR,NULL_CHAR, 2);
-CElement cold(COLD_CHAR, FIRE_CHAR, NULL_CHAR, 3);
-CElement life(LIFE_CHAR, DEATH_CHAR,NULL_CHAR, 5);
-CElement death(DEATH_CHAR, LIFE_CHAR, NULL_CHAR, 6);
-CElement lightning(LIGHTNING_CHAR, EARTH_CHAR, WATER_CHAR, 8);
-CElement earth(EARTH_CHAR, LIGHTNING_CHAR, NULL_CHAR, 10);
-CElement shield(SHIELD_CHAR, SHIELD_CHAR, NULL_CHAR, 11);
-CElement nullElement(NULL_CHAR, NULL_CHAR, NULL_CHAR, 0);
+CElement steam(STEAM_ELEM, NULL_ELEM, NULL_ELEM, STEAM_CHAR);
+CElement ice(ICE_ELEM, NULL_ELEM, NULL_ELEM, ICE_CHAR);
+CElement water(WATER_ELEM, LIGHTNING_ELEM, EARTH_ELEM, WATER_CHAR);
+CElement fire(FIRE_ELEM, COLD_ELEM,NULL_ELEM, FIRE_CHAR);
+CElement cold(COLD_ELEM, FIRE_ELEM, NULL_ELEM, COLD_CHAR);
+CElement life(LIFE_ELEM, DEATH_ELEM,NULL_ELEM, LIFE_CHAR);
+CElement death(DEATH_ELEM, LIFE_ELEM, NULL_ELEM, DEATH_CHAR);
+CElement lightning(LIGHTNING_ELEM, EARTH_ELEM, WATER_ELEM, LIGHTNING_CHAR);
+CElement earth(EARTH_ELEM, LIGHTNING_ELEM, NULL_ELEM, EARTH_CHAR);
+CElement shield(SHIELD_ELEM, SHIELD_ELEM, NULL_ELEM, SHIELD_CHAR);
+CElement nullElement(NULL_ELEM, NULL_ELEM, NULL_ELEM, NULL_CHAR);
 
-CElement::CElement(char name_, char canceledBy_, char canceledBy2_, int rank_):name(name_),cancelledBy(canceledBy_), cancelledBy2(canceledBy2_), rank(rank_)
+CElement::CElement(ElementID id_, ElementID canceledBy_, ElementID canceledBy2_, char letter_):id(id_),cancelledBy(canceledBy_), cancelledBy2(canceledBy2_), letter(letter_)
 {
 
 }
@@ -24,3 +24,21 @@ CElement::~CElement()
 {
 }
 
+CElement &CElement::GetCElementByID(ElementID element_id)
+{ 
+	switch (element_id)
+	{
+	case SHIELD_ELEM: return shield;
+	case EARTH_ELEM: return earth;
+	case LIGHTNING_ELEM: return lightning;
+	case ICE_ELEM: return ice;
+	case DEATH_ELEM: return death;
+	case LIFE_ELEM: return life;
+	case STEAM_ELEM: return steam;
+	case COLD_ELEM: return cold;
+	case FIRE_ELEM: return fire;
+	case WATER_ELEM: return water;
+	default:
+		return nullElement;
+	}
+}

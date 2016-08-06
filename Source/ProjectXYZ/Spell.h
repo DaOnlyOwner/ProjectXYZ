@@ -28,7 +28,7 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void SetSpellElements(TArray<CElement *> &queue) {
+	void SetSpellElements(TArray<uint8> &queue) {
 	   spellElements = queue;
 	}
 
@@ -37,5 +37,5 @@ public:
 	virtual void EndBehavior() {};
 	
 protected:
-	TArray<CElement *> spellElements;
+	TArray<uint8> spellElements;
 };

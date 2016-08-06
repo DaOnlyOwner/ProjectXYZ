@@ -7,8 +7,30 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-
 class ASpell;
+
+UENUM()
+enum CharacterState /* used for delay-related mechanics */
+{
+	NULL_STATE,
+	READY, /* ready to cast spell */
+	BUSY_CHARGING,
+	BUSY_BEAMING,
+	BUSY_SPRAYING,
+	BUSY_HEALING,
+	BUSY_PLACING_SPELL, /* to block movement for a short period of time*/
+	BUSY_KNOCKED, 
+	BUSY_PUSHED,
+	BUSY_SHOCKED /* in lightning storms */
+};
+UENUM()
+
+enum STATUS
+{
+	NORMAL,
+	WET,
+	BURNING
+};
 
 UCLASS()
 class PROJECTXYZ_API APlayerCharacter : public ACharacter
@@ -26,7 +48,16 @@ public:
 	void endCharge();
 	void ReleaseSpellSelf();
 	void KeyupForward();
+	
+	UFUNCTION(Server,Reliable, WithValidation)
+	void ReleaseSpellForwardNet();
+	void ReleaseSpellForwardNet_Implementation();
+	bool ReleaseSpellForwardNet_Validate();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void KeyupForwardNet();
+	void KeyupForwardNet_Implementation();
+	bool KeyupForward_Validate();
 
 	void AddElementToQueue(CElement &e);
 
@@ -48,15 +79,31 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
-	UPROPERTY(EditAnywhere)
-		float MaxChargeTime = 5.0;
-	
+	UPROPERTY(Replicated)
+		int State = READY;
+
+	UPROPERTY(Replicated)
+		int Status = NORMAL;
+
+	UFUNCTION()
+		void setStateToReady();
+
+
+
+	UFUNCTION()
+		void onElementQueueChange();
+	UFUNCTION()
+		void onStateChange();
 
 private:
 
-	CElement *elementQueue[3] = {&nullElement, &nullElement, &nullElement};
+	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
+		TArray<uint8> elementQueue;
+
+	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
+		ASpell* currentSpell;
+	
 	FVector startOffset;
-	ASpell* currentSpell;
-	int elementQueueSize = 0;
-	FTimerHandle chargeHandler;
+
+	FTimerHandle timerHandler;
 };
