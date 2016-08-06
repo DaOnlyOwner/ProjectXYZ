@@ -60,7 +60,7 @@ public:
 	bool KeyupForward_Validate();
 
 	void AddElementToQueue(CElement &e);
-
+	int QueueToSpellType();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -79,7 +79,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
 		int State = READY;
 
 	UPROPERTY(Replicated)
@@ -94,13 +94,15 @@ public:
 		void onElementQueueChange();
 	UFUNCTION()
 		void onStateChange();
+	UFUNCTION()
+		void onCurrentSpellChange();
 
 private:
 
 	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
 		TArray<uint8> elementQueue;
 
-	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
+	UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
 		ASpell* currentSpell;
 	
 	FVector startOffset;

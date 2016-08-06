@@ -48,6 +48,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 	moveCamera(DeltaTime);
 }
 
+int APlayerCharacter::QueueToSpellType()
+{
+	return Charged;
+}
 /* ROLE_AutonomousProxy */
 void APlayerCharacter::AddElementToQueue(CElement & newElement)
 {
@@ -76,7 +80,7 @@ void APlayerCharacter::ReleaseSpellForward()
 		return;
 
 	ReleaseSpellForwardNet();
-	elementQueue.Empty();
+	
 }
 
 /* ROLE_authority */
@@ -88,16 +92,13 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation()
 		return;
 	}
 
-	currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false);
-
-	if (currentSpell->Type == Spelltype::Charged)
+	if (QueueToSpellType() == Charged)
 	{
 		State = BUSY_CHARGING;
 
 		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHARGE_TIME, 0);
 		GEngine->AddOnScreenDebugMessage(15, 2.0f, FColor::Red, "spawned rock");
 	}
-
 }
 bool APlayerCharacter::ReleaseSpellForwardNet_Validate()
 {
@@ -136,10 +137,11 @@ void APlayerCharacter::ReleaseSpellSelf()
 
 void APlayerCharacter::KeyupForward()
 {
-	if (currentSpell != nullptr && State == BUSY_CHARGING && currentSpell->Type == Spelltype::Charged)
+	if (QueueToSpellType() == Charged && State == BUSY_CHARGING)
 	{
 		KeyupForwardNet();
 	}
+	elementQueue.Empty();
 }
 /* ROLE_authority */
 void APlayerCharacter::KeyupForwardNet_Implementation()
@@ -156,10 +158,11 @@ void APlayerCharacter::KeyupForwardNet_Implementation()
 			elapsedTime = MAX_CHARGE_TIME;
 		}
 		State = READY;
-
+		
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(elementQueue, false);
 		GEngine->AddOnScreenDebugMessage(16, 5.0f,  FColor::Red, FString::SanitizeFloat(elapsedTime));
 		static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
-		currentSpell->StartBehavior(*this);
+		static_cast<AChargeableSpell*>(currentSpell)->StartBehavior(*this);
 	}
 	else if (State == BUSY_BEAMING || State == BUSY_SPRAYING)
 	{
@@ -209,6 +212,10 @@ void APlayerCharacter::onStateChange()
 	FString string = "Enforced new state: ";
 	string += FString::SanitizeFloat(State);
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+}
+void APlayerCharacter::onCurrentSpellChange()
+{
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, "current spell changed", true);
 }
 
 
