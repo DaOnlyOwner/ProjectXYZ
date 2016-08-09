@@ -13,6 +13,8 @@
 #include "PlayerCharacterController.h"
 
 
+#define PRINTSCR(text) GEngine->AddOnScreenDebugMessage(INDEX_NONE, 50.0f, FColor::Orange, text, true)
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -42,6 +44,8 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 	DOREPLIFETIME(APlayerCharacter, elementQueue);
 	DOREPLIFETIME(APlayerCharacter, currentSpell);
 	DOREPLIFETIME(APlayerCharacter, State);
+	DOREPLIFETIME(APlayerCharacter, wards);
+	DOREPLIFETIME(APlayerCharacter, health);
 }
 
 // Called every frame
@@ -103,7 +107,7 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8>
 		return;
 	}
 
-	ServerSideElementQueue = elemQueue;
+	serverSideElementQueue = elemQueue;
 
 	if (QueueToSpellType(elemQueue) == Charged)
 	{
@@ -113,7 +117,7 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8>
 	else if (QueueToSpellType(elemQueue) == Channeled)
 	{
 		State = BUSY_CHANNELING;
-		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, false);
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(serverSideElementQueue, false);
 		/*currentSpell->SetOwner(this);*/
 		currentSpell->AttachRootComponentToActor(this, NAME_None, EAttachLocation::KeepRelativeOffset);
 		/*GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHANNEL_TIME, 0);*/
@@ -164,19 +168,28 @@ void APlayerCharacter::ReleaseSpellSelf()
 }
 void APlayerCharacter::ReleaseSpellSelfNet_Implementation(const TArray<uint8> & elemQueue)
 {
-	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "middle click DOWN");
+	GEngine->AddOnScreenDebugMessage(14, 2.0f, FColor::Red, "middle click DOWN - server");
 
 	if (State != READY) {// player is busy doing something else, can't cast anything right now.
 		return;
 	}
 		
-	ServerSideElementQueue = elemQueue;
+	serverSideElementQueue = elemQueue;
 	State = BUSY_PLACING_SPELL;
 	if (elemQueue.Contains(SHIELD_ELEM))
 	{
-		if (elemQueue.Num() > 2)
+		// Assign wards
+		wards.Empty();
+		if (elemQueue.Num() >= 2)
 		{
-			// it's a ward
+			for (uint8 i = 0; i < elemQueue.Num(); i++)
+			{
+				if (elemQueue[i] != ElementID::SHIELD_ELEM)
+				{
+					wards.Add(elemQueue[i]);
+				}
+			}
+			State = READY;
 		}
 		else
 		{
@@ -186,8 +199,8 @@ void APlayerCharacter::ReleaseSpellSelfNet_Implementation(const TArray<uint8> & 
 	else
 	{
 		// it's an AoE
-		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, true);
-		static_cast<AAoESpell*>(currentSpell)->StartBehavior(*this);
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(serverSideElementQueue, true);
+		currentSpell->StartBehavior(*this);
 		GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::setStateToReady, 0.5f, 0);
 
 	}
@@ -225,10 +238,10 @@ void APlayerCharacter::KeyupForwardNet_Implementation()
 		}
 		State = READY;
 		
-		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(ServerSideElementQueue, false);
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(serverSideElementQueue, false);
 		GEngine->AddOnScreenDebugMessage(16, 5.0f,  FColor::Red, FString::SanitizeFloat(elapsedTime));
 		static_cast<AChargeableSpell*>(currentSpell)->SetChargedTime(elapsedTime);
-		static_cast<AChargeableSpell*>(currentSpell)->StartBehavior(*this);
+		currentSpell->StartBehavior(*this);
 	}
 	else if (State == BUSY_CHANNELING)
 	{
@@ -250,6 +263,51 @@ bool APlayerCharacter::KeyupForwardNet_Validate()
 void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	if (!HasAuthority()) return 0;
+	ASpell* spell;
+	if ( (spell = Cast<ASpell>(DamageCauser)) != nullptr)
+	{
+		// DamageCauser is a spell;
+		FDamageInformation damage = spell->CalcDamageBasedOnWards(wards, Status); // We have to compute it here because of additional information needed (wards etc.)
+		Status = damage.computedStatus;
+		health -= damage.computedDamage;
+		if (health <= 0)
+		{
+			KillActor(damage.spellType);
+		}
+
+		return damage.computedDamage;
+	}
+
+	else
+	{
+
+
+		// DamageCauser is self - caused by burning
+		int fireWardAmount = 0;
+		for (int i = 0; i < 2; i++)
+		{
+			if (wards[i] == ElementID::FIRE_ELEM)
+			{
+				fireWardAmount++;
+			}
+		}
+
+		if(fireWardAmount > 0)
+			DamageAmount = fireWardAmount == 1 ? DamageAmount * 0.5f : 0;
+
+		return DamageAmount;
+	}
+}
+
+void APlayerCharacter::KillActor(Spelltype spellType)
+{
+	if (!HasAuthority()) return;
+	// Spawn animations, particles etc. for death based on the spellType (for example Charged will smash the player to pieces)
 }
 
 void APlayerCharacter::moveCamera(float DeltaTime)
@@ -283,6 +341,20 @@ void APlayerCharacter::onStateChange()
 void APlayerCharacter::onCurrentSpellChange()
 {
 	/*GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, "current spell changed", true);*/
+}
+
+void APlayerCharacter::onWardChange()
+{
+	/*FString print = "";
+	print += "Wards Changed for " + this->GetHumanReadableName();
+	print += "Ward1: " + (wards.Num() > 0 ? FString::SanitizeFloat(wards[0]) : TEXT("Null"));
+	print += "Ward2: " + (wards.Num() > 1 ? FString::SanitizeFloat(wards[1]) : TEXT("Null"));
+	PRINTSCR(print);*/
+}
+
+void APlayerCharacter::onHealthChanged()
+{
+	
 }
 
 
