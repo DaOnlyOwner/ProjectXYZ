@@ -90,6 +90,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
+	UPROPERTY(BlueprintReadOnly, Replicated, ReplicatedUsing = onHealthChanged) // update healthbar etc.
+		float Health;
+
 	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
 		int State = READY;
 
@@ -98,6 +101,7 @@ public:
 
 	UFUNCTION()
 		void setStateToReady();
+
 
 
 
@@ -110,7 +114,8 @@ public:
 
 	UFUNCTION()
 		void onWardChange();
-	UFUNCTION()
+
+	UFUNCTION(BlueprintImplementableEvent)
 		void onHealthChanged();
 
 
@@ -125,11 +130,7 @@ private:
 		TArray<uint8> serverSideElementQueue;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
-		ASpell* currentSpell;
-
-	UPROPERTY(Replicated, ReplicatedUsing = onHealthChanged) // update healthbar etc.
-		float health;
-	
+		ASpell* currentSpell;	
 	FVector startOffset;
 
 	FTimerHandle timerHandler;

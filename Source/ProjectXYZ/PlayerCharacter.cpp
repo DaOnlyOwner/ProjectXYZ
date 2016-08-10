@@ -45,7 +45,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 	DOREPLIFETIME(APlayerCharacter, currentSpell);
 	DOREPLIFETIME(APlayerCharacter, State);
 	DOREPLIFETIME(APlayerCharacter, wards);
-	DOREPLIFETIME(APlayerCharacter, health);
+	DOREPLIFETIME(APlayerCharacter, Health);
 }
 
 // Called every frame
@@ -274,8 +274,8 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const & Dama
 		// DamageCauser is a spell;
 		FDamageInformation damage = spell->CalcDamageBasedOnWards(wards, Status); // We have to compute it here because of additional information needed (wards etc.)
 		Status = damage.computedStatus;
-		health -= damage.computedDamage;
-		if (health <= 0)
+		Health -= damage.computedDamage;
+		if (Health <= 0)
 		{
 			KillActor(damage.spellType);
 		}
@@ -352,10 +352,6 @@ void APlayerCharacter::onWardChange()
 	PRINTSCR(print);*/
 }
 
-void APlayerCharacter::onHealthChanged()
-{
-	
-}
 
 
 
