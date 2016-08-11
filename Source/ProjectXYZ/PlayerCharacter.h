@@ -24,11 +24,12 @@ enum CharacterState /* used for delay-related mechanics */
 };
 UENUM()
 
-enum STATUS
+enum Status
 {
 	NORMAL,
 	WET,
-	BURNING
+	BURNING,
+	COLD
 };
 
 UCLASS()
@@ -63,9 +64,12 @@ public:
 	void ReleaseSpellSelfNet_Implementation(const TArray<uint8> &elementQueue);
 	bool ReleaseSpellSelfNet_Validate(const TArray<uint8> &elementQueue);
 
+	//Executed only on the server
+	void KillActor(enum Spelltype spelltype);
 	void AddElementToQueue(CElement &e);
 	int QueueToSpellType(TArray<uint8> elementQueue);
 	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 	
 	// Called every frame
@@ -73,6 +77,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
+	//Garuanteed to be executed only on the server
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
 
 	UPROPERTY(EditAnywhere)
 		USceneComponent* camera;
@@ -82,6 +89,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, ReplicatedUsing = onHealthChanged) // update healthbar etc.
+		float Health;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
 		int State = READY;
@@ -94,6 +104,7 @@ public:
 
 
 
+
 	UFUNCTION()
 		void onElementQueueChange();
 	UFUNCTION()
@@ -101,17 +112,25 @@ public:
 	UFUNCTION()
 		void onCurrentSpellChange();
 
+	UFUNCTION()
+		void onWardChange();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void onHealthChanged();
+
+
 private:
+
+	UPROPERTY(Replicated, ReplicatedUsing = onWardChange)
+		TArray<uint8> wards;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
 		TArray<uint8> elementQueue;
 
-	UPROPERTY()
-		TArray<uint8> ServerSideElementQueue;
+		TArray<uint8> serverSideElementQueue;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
-		ASpell* currentSpell;
-	
+		ASpell* currentSpell;	
 	FVector startOffset;
 
 	FTimerHandle timerHandler;

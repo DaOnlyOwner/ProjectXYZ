@@ -15,6 +15,14 @@ enum Spelltype
 	Burst = 3
 };
 
+
+struct FDamageInformation
+{
+	float computedDamage = 0;
+	Status computedStatus = Status::NORMAL;
+	Spelltype spellType = Spelltype::None;
+};
+
 UCLASS()
 class PROJECTXYZ_API ASpell : public AActor
 {
@@ -28,13 +36,18 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void SetSpellElements(TArray<uint8> &queue) {
+	FORCEINLINE void SetSpellElements(const TArray<uint8> &queue) {
 	   spellElements = queue;
-	}
+	} 
 
 	// Advance this if you need.
 	virtual void StartBehavior(const APlayerCharacter& player) {};
 	virtual void EndBehavior() {};
+	virtual FDamageInformation CalcDamageBasedOnWards(const TArray<uint8>& wards, int status) 
+	{
+		FDamageInformation dummy;
+		return dummy; // Named return value optimization. 
+	};
 	
 protected:
 	TArray<uint8> spellElements;
