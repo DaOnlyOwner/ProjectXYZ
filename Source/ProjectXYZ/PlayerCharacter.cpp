@@ -122,6 +122,11 @@ void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8>
 		currentSpell->AttachRootComponentToActor(this, NAME_None, EAttachLocation::KeepRelativeOffset);
 		/*GetWorldTimerManager().SetTimer(timerHandler, this, &APlayerCharacter::endCharge, MAX_CHANNEL_TIME, 0);*/
 	}
+	else if (QueueToSpellType(elemQueue) == Burst)
+	{
+		currentSpell = GetWorld()->GetGameState<ACustomGameState>()->genSpell(serverSideElementQueue, false);
+		currentSpell->StartBehavior(*this);
+	}
 }
 bool APlayerCharacter::ReleaseSpellForwardNet_Validate(const TArray<uint8> & elemQueue)
 {
