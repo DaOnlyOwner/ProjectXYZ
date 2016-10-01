@@ -3,6 +3,7 @@
 #include "ProjectXYZ.h"
 #include "StormSpell.h"
 #include "StormUnit.h"
+#include "SpellSystemConstants.h"
 
 
 AStormSpell::AStormSpell()
@@ -20,20 +21,9 @@ void AStormSpell::BeginPlay()
 
 void AStormSpell::StartBehavior(const APlayerCharacter & player)
 {
-	//SetActorLocation(player.GetActorLocation() + FVector(250.0f, 0.0f, 0.0f));
-	//SetActorRotation(player.GetActorRotation());
+
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	FString string = FString::SanitizeFloat(player.GetActorRotation().Roll);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
-
-	 string = FString::SanitizeFloat(player.GetActorRotation().Pitch);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
-
-	 string = FString::SanitizeFloat(player.GetActorRotation().Yaw);
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
-
 
 	int angle = player.GetActorRotation().Yaw;
 	FVector playerLoc = player.GetActorLocation();
@@ -41,20 +31,36 @@ void AStormSpell::StartBehavior(const APlayerCharacter & player)
 	playerLoc.Z = 0; // player location is centered on the body, we want to spawn on the floor
 	const FRotator newRot = player.GetActorRotation();
 
-	angle = angle - 20 - 20;
-	for (int i = 0; i < 5; i++)
+	if (spellElements.Num() > 2)
+	{
+		angle = angle - STORM_UNIT_GAP * 2;
+		for (int i = 0; i < 5; i++)
+		{
+			Units.Push(static_cast<AActor*>(GetWorld()->SpawnActor(StormUnitBP)));
+			Units[i]->SetActorLocation(playerLoc + FVector(STORM_UNIT_DISTANCE_FROM_PLAYER * cos(angle * 3.1415 / 180), STORM_UNIT_DISTANCE_FROM_PLAYER * sin(angle * 3.1415 / 180), 0), false, nullptr, ETeleportType::None);
+			Units[i]->SetActorRotation(newRot, ETeleportType::None);
+			angle += STORM_UNIT_GAP;
+		}
+	}
+	else
 	{
 		Units.Push(static_cast<AActor*>(GetWorld()->SpawnActor(StormUnitBP)));
-		Units[i]->SetActorLocation(playerLoc + FVector(250 * cos(angle * 3.1415 / 180), 250 * sin(angle * 3.1415 / 180), 0), false, nullptr, ETeleportType::None);
-		Units[i]->SetActorRotation(newRot, ETeleportType::None);
-		angle += 20;
+		Units[0]->SetActorLocation(playerLoc + FVector(STORM_UNIT_DISTANCE_FROM_PLAYER * cos(angle * 3.1415 / 180), STORM_UNIT_DISTANCE_FROM_PLAYER * sin(angle * 3.1415 / 180), 0), false, nullptr, ETeleportType::None);
+		Units[0]->SetActorRotation(newRot, ETeleportType::None);
 	}
+
+	GetWorldTimerManager().SetTimer(timerHandler, this, &AStormSpell::EndBehavior, MAX_STORM_LIFETIME, 0);
 
 }
 
 void AStormSpell::EndBehavior()
 {
+	for (int i = 0; i < Units.Num(); i++)
+	{
+		Units[i]->Destroy();
+	}
 	Destroy();
+
 
 }
 

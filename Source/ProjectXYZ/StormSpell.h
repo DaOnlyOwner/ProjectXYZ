@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Spell.h"
-#include "Array.h"
+
 #include "StormSpell.generated.h"
 
 /**
