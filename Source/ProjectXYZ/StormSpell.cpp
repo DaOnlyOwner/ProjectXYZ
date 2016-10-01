@@ -2,15 +2,13 @@
 
 #include "ProjectXYZ.h"
 #include "StormSpell.h"
+#include "StormUnit.h"
 
 
 AStormSpell::AStormSpell()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StormMesh"));
-	mesh->OnComponentBeginOverlap.AddDynamic(this, &AStormSpell::OnOverlapBegin);
-	mesh->Activate(true);
 	this->SetReplicates(true);
+
 
 }
 
@@ -22,7 +20,35 @@ void AStormSpell::BeginPlay()
 
 void AStormSpell::StartBehavior(const APlayerCharacter & player)
 {
-	SetActorLocation(player.GetActorLocation());
+	//SetActorLocation(player.GetActorLocation() + FVector(250.0f, 0.0f, 0.0f));
+	//SetActorRotation(player.GetActorRotation());
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	FString string = FString::SanitizeFloat(player.GetActorRotation().Roll);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+
+	 string = FString::SanitizeFloat(player.GetActorRotation().Pitch);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+
+	 string = FString::SanitizeFloat(player.GetActorRotation().Yaw);
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
+
+
+	int angle = player.GetActorRotation().Yaw;
+	FVector playerLoc = player.GetActorLocation();
+
+	playerLoc.Z = 0; // player location is centered on the body, we want to spawn on the floor
+	const FRotator newRot = player.GetActorRotation();
+
+	angle = angle - 20 - 20;
+	for (int i = 0; i < 5; i++)
+	{
+		Units.Push(static_cast<AActor*>(GetWorld()->SpawnActor(StormUnitBP)));
+		Units[i]->SetActorLocation(playerLoc + FVector(250 * cos(angle * 3.1415 / 180), 250 * sin(angle * 3.1415 / 180), 0), false, nullptr, ETeleportType::None);
+		Units[i]->SetActorRotation(newRot, ETeleportType::None);
+		angle += 20;
+	}
 
 }
 
