@@ -21,7 +21,7 @@ public:
 	virtual void BeginPlay() override;
 
 	void EndBehavior() override;
-	void StartBehavior(const APlayerCharacter& player) override;
+	void StartBehavior(APlayerCharacter& player) override;
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;

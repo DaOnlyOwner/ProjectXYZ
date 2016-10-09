@@ -22,7 +22,7 @@ public:
 		UStaticMeshComponent* mesh;
 
 	void EndBehavior() override;
-	void StartBehavior(const APlayerCharacter& player) override;
+	void StartBehavior(APlayerCharacter& player) override;
 
 	
 	UFUNCTION()

@@ -21,7 +21,7 @@ void AAoESpell::BeginPlay()
 	Super::BeginPlay();
 
 }
-void AAoESpell::StartBehavior(const APlayerCharacter & player)
+void AAoESpell::StartBehavior(APlayerCharacter & player)
 {
 	SetActorLocation(player.GetActorLocation());
 	int scale = spellElements.Num() * 2 ;

@@ -20,7 +20,7 @@ void AMineSpell::BeginPlay()
 	
 }
 
-void AMineSpell::StartBehavior(const APlayerCharacter & player)
+void AMineSpell::StartBehavior(APlayerCharacter & player)
 {
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -41,7 +41,7 @@ void AMineSpell::SpawnNewUnit()
 	angleShift = FrontAngle - 35 + 35 * Units.Num();
 
 	Units.Push(static_cast<AActor*>(GetWorld()->SpawnActor(MineUnitBP)));
-	Units[Units.Num() - 1]->SetActorLocation( playerLoc + FVector(STORM_UNIT_DISTANCE_FROM_PLAYER * cos((angleShift) * 3.1415 / 180), STORM_UNIT_DISTANCE_FROM_PLAYER * sin((angleShift) * 3.1415 / 180), 0), false, nullptr, ETeleportType::None);
+	Units[Units.Num() - 1]->SetActorLocation( playerLoc + FVector(STORM_UNIT_DISTANCE_FROM_PLAYER * cos((angleShift) * 3.1415f / 180), STORM_UNIT_DISTANCE_FROM_PLAYER * sin((angleShift) * 3.1415f / 180), 0), false, nullptr, ETeleportType::None);
 	Units[Units.Num() - 1]->SetActorRotation(FRotator(0.0f), ETeleportType::None);
 	if (Units.Num() < 3)
 	{
