@@ -20,7 +20,7 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void EndBehavior();
+	void EndBehaviorLowLevel();
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 

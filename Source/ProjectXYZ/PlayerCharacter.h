@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
-#include "Element.h"
-#include "Array.h"
 #include "GameFramework/Character.h"
+#include "Element.h"
+#include "SpellTable.h"
 #include "PlayerCharacter.generated.h"
 
 #define debug(string,arguments) UE_LOG(LogTemp, Warning, TEXT(string), arguments);
@@ -25,8 +24,8 @@ enum CharacterState /* used for delay-related mechanics */
 	BUSY_PUSHED,
 	BUSY_SHOCKED /* in lightning storms */
 };
-UENUM()
 
+UENUM()
 enum Status
 {
 	NORMAL,
@@ -42,15 +41,17 @@ class PROJECTXYZ_API APlayerCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	APlayerCharacter();
-	~APlayerCharacter();
+    APlayerCharacter();
+    //~APlayerCharacter();
 
 	void moveCamera(float DeltaSeconds);
-	void ReleaseSpellForward();
-	void beginCharge();
+    void ReleaseSpellForward();
+    void ReleaseSpellSelf();
+    void KeyupForward();
+
+/*  void beginCharge();
 	void endCharge();
-	void ReleaseSpellSelf();
-	void KeyupForward();
+
 	
 	UFUNCTION(Server,Reliable, WithValidation)
 	void ReleaseSpellForwardNet(const TArray<uint8>  &elementQueue);
@@ -66,9 +67,10 @@ public:
 	void ReleaseSpellSelfNet(const TArray<uint8> &elementQueue);
 	void ReleaseSpellSelfNet_Implementation(const TArray<uint8> &elementQueue);
 	bool ReleaseSpellSelfNet_Validate(const TArray<uint8> &elementQueue);
-
+*/
 	void AddElementToQueue(CElement &e);
-	int QueueToSpellType(TArray<uint8> elementQueue);
+	void DisposeSpellRef();
+    //int QueueToSpellType(TArray<uint8> elementQueue);
 	// Called when the game starts or when spawned
 
 	virtual void BeginPlay() override;
@@ -77,7 +79,7 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+    //virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	UPROPERTY(EditAnywhere)
 		USceneComponent* camera;
@@ -88,7 +90,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ScreenScale = 1000.0f;
 
-	UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
+    /*UPROPERTY(Replicated, ReplicatedUsing = onStateChange)
 		int State = READY;
 
 	UPROPERTY(Replicated)
@@ -105,22 +107,22 @@ public:
 	UFUNCTION()
 		void onStateChange();
 	UFUNCTION()
-		void onCurrentSpellChange();
+        void onCurrentSpellChange();*/
 
 private:
 
 
-	UPROPERTY(Replicated)
-		TArray<uint8> wards;
+    //UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
+        TArray<ElementID> elementQueue;
 
-	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
-		TArray<uint8> elementQueue;
+        //TArray<uint8> serverSideElementQueue;
 
-		TArray<uint8> serverSideElementQueue;
+    //UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
+		TWeakObjectPtr<ASpell> currentSpell;	
+        FVector startOffset;
 
-	UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
-		ASpell* currentSpell;	
-	FVector startOffset;
+        UPROPERTY(EditAnywhere)
+        UDataAsset* database;
 
-	FTimerHandle timerHandler;
+    //FTimerHandle timerHandler;
 };

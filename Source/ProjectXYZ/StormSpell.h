@@ -17,14 +17,11 @@ class PROJECTXYZ_API AStormSpell : public ASpell
 public:
 	AStormSpell();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
 		UStaticMeshComponent* mesh;
 
-	void EndBehavior() override;
-	void StartBehavior(APlayerCharacter& player) override;
+	void EndBehaviorLowLevel() override;
+    void StartBehaviorLowLevel() override;
 
 
 	UFUNCTION()

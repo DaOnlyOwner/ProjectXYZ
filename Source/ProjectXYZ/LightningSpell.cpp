@@ -18,14 +18,14 @@ void ALightningSpell::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ALightningSpell::StartBehavior(APlayerCharacter& playerCharacter)
+void ALightningSpell::StartBehaviorLowLevel()
 {
 	TArray<FOverlapResult> hitresults;
 	
-	FVector center = playerCharacter.GetActorLocation() + playerCharacter.GetActorForwardVector() * 250.0f;
-	FQuat rot{ playerCharacter.GetActorRotation().Add(0,90,0) };
+    FVector center = originPlayer->GetActorLocation() + originPlayer->GetActorForwardVector() * 250.0f;
+    FQuat rot{ originPlayer->GetActorRotation().Add(0,90,0) };
 	FCollisionQueryParams collisionQueryParams;
-	collisionQueryParams.AddIgnoredActor(&playerCharacter);
+    collisionQueryParams.AddIgnoredActor(originPlayer.Get());
 	collisionQueryParams.TraceTag = "DebugTrace";
 	collisionQueryParams.bTraceComplex = false; // Trace only against spheres, capsules, boxes, cones etc. (No meshes)
 	
@@ -36,10 +36,10 @@ void ALightningSpell::StartBehavior(APlayerCharacter& playerCharacter)
 	if (!hit)
 	{
 		// Cast into the wild;
-		Destroy();
+		Destroy(); // EndBehaviorLowLevel() is better
 	}
 	
-	lightningChain.Add( static_cast<AActor*>(&playerCharacter) );
+    lightningChain.Add( static_cast<AActor*>(originPlayer.Get()) );
 	AActor* bestChoice = nullptr;
 
 	float lengthBetweenThisAndBestChoice = LIGHTNING_LENGTH * LIGHTNING_LENGTH + 100; // Make the initial value worst; Remember squared!
@@ -47,14 +47,14 @@ void ALightningSpell::StartBehavior(APlayerCharacter& playerCharacter)
 	{
 		FOverlapResult& result = hitresults[i];
 		AActor* actor = result.GetActor();
-		FVector dirToHitresult = actor->GetActorLocation() - playerCharacter.GetActorLocation();
+        FVector dirToHitresult = actor->GetActorLocation() - originPlayer->GetActorLocation();
 		dirToHitresult.Normalize();
-		float cosalpha = FVector::DotProduct( dirToHitresult , playerCharacter.GetActorForwardVector());
+        float cosalpha = FVector::DotProduct( dirToHitresult , originPlayer->GetActorForwardVector());
 		float alpha = FMath::Acos(cosalpha);
 		debugScreen(FString::SanitizeFloat(alpha * (180.0f / PI)), 5.0f);
 		if (alpha < LIGHTNING_OPENING_ANGLE) 
 		{
-			float lengthHitresult = (playerCharacter.GetActorLocation() - actor->GetActorLocation()).SizeSquared();
+            float lengthHitresult = (originPlayer->GetActorLocation() - actor->GetActorLocation()).SizeSquared();
 			if (lengthHitresult < lengthBetweenThisAndBestChoice)
 			{
 				bestChoice = actor;

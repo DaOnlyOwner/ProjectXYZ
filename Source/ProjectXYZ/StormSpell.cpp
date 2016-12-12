@@ -13,25 +13,19 @@ AStormSpell::AStormSpell()
 
 }
 
-void AStormSpell::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-void AStormSpell::StartBehavior(APlayerCharacter & player)
+void AStormSpell::StartBehaviorLowLevel()
 {
 
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	int angle = player.GetActorRotation().Yaw;
-	FVector playerLoc = player.GetActorLocation();
+    int angle = originPlayer->GetActorRotation().Yaw;
+    FVector playerLoc = originPlayer->GetActorLocation();
 
 	playerLoc.Z = 0; // player location is centered on the body, we want to spawn on the floor
-	const FRotator newRot = player.GetActorRotation();
+    const FRotator newRot = originPlayer->GetActorRotation();
 
-	if (spellElements.Num() > 2)
+    if (damageInformation.Elements.Num() > 2)
 	{
 		angle = angle - STORM_UNIT_GAP * 2;
 		for (int i = 0; i < 5; i++)
@@ -49,19 +43,17 @@ void AStormSpell::StartBehavior(APlayerCharacter & player)
 		Units[0]->SetActorRotation(newRot, ETeleportType::None);
 	}
 
-	GetWorldTimerManager().SetTimer(timerHandler, this, &AStormSpell::EndBehavior, MAX_STORM_LIFETIME, 0);
+	GetWorldTimerManager().SetTimer(timerHandler, this, &AStormSpell::EndBehaviorLowLevel, MAX_STORM_LIFETIME, 0);
 
 }
 
-void AStormSpell::EndBehavior()
+void AStormSpell::EndBehaviorLowLevel()
 {
 	for (int i = 0; i < Units.Num(); i++)
 	{
 		Units[i]->Destroy();
 	}
 	Destroy();
-
-
 }
 
 void AStormSpell::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -20,16 +20,16 @@ void AMineSpell::BeginPlay()
 	
 }
 
-void AMineSpell::StartBehavior(APlayerCharacter & player)
+void AMineSpell::StartBehaviorLowLevel()
 {
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	FrontAngle = player.GetActorRotation().Yaw;
-	playerLoc = player.GetActorLocation();
+    FrontAngle = originPlayer->GetActorRotation().Yaw;
+    playerLoc = originPlayer->GetActorLocation();
 
 	playerLoc.Z = 1; // player location is centered on the body, we want to spawn on the floor
-	const FRotator newRot = player.GetActorRotation();
+    const FRotator newRot = originPlayer->GetActorRotation();
 
 	SpawnNewUnit();
 	
@@ -48,7 +48,7 @@ void AMineSpell::SpawnNewUnit()
 		GetWorldTimerManager().SetTimer(timerHandler, this, &AMineSpell::SpawnNewUnit, 0.05f, 0);
 	}
 }
-void AMineSpell::EndBehavior()
+void AMineSpell::EndBehaviorLowLevel()
 {
 	for (int i = 0; i < Units.Num(); i++)
 	{

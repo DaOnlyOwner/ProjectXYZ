@@ -21,8 +21,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
 		UStaticMeshComponent* mesh;
 
-	void EndBehavior() override;
-	void StartBehavior(APlayerCharacter& player) override;
+	void EndBehaviorLowLevel() override;
+    void StartBehaviorLowLevel() override;
 
 	
 	UFUNCTION()

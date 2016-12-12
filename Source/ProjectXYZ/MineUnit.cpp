@@ -32,7 +32,7 @@ void AMineUnit::Tick( float DeltaTime )
 	Super::Tick( DeltaTime );
 
 }
-void AMineUnit::EndBehavior()
+void AMineUnit::EndBehaviorLowLevel()
 {
 	Destroy();
 }
@@ -40,7 +40,7 @@ void AMineUnit::Explode()
 {
 	// temporary
 	SetActorRelativeScale3D(FVector(5.0f, 5.0f, 1.0f));
-	GetWorldTimerManager().SetTimer(timerHandler, this, &AMineUnit::EndBehavior, 0.2f, 0);
+	GetWorldTimerManager().SetTimer(timerHandler, this, &AMineUnit::EndBehaviorLowLevel, 0.2f, 0);
 }
 
 void AMineUnit::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

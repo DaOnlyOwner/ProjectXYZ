@@ -56,7 +56,7 @@ public:
 
 
 private:
-	APlayerCharacter* actor;
+    TWeakObjectPtr<APlayerCharacter>  actor;
 	void setWaypoint(float AxisValue);
 	void handleWaterKey();
 	void handleLifeKey();

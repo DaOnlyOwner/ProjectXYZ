@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "ProjectXYZ.h"
+
 /*
 Class defining the elements.
 */
@@ -20,27 +22,17 @@ Class defining the elements.
 #define NULL_CHAR ' '
 #define SELFCAST_CHAR '!'
 
-UENUM()
-enum ElementID
+UENUM(BlueprintType)
+enum class ElementID : uint8
 {
-   SHIELD_ELEM,
-   EARTH_ELEM,
-   LIGHTNING_ELEM,
-   ICE_ELEM,
-   DEATH_ELEM,
-   LIFE_ELEM,
-   STEAM_ELEM,
-   COLD_ELEM,
-   FIRE_ELEM,
-   WATER_ELEM,
-   NULL_ELEM
+	Shield, Earth, Lightning, Ice, Death, Life, Steam, Cold, Fire, Water, Null
 };
 
 class PROJECTXYZ_API CElement
 {
 
 public:
-	CElement(ElementID id_ , ElementID canceledBy_ , ElementID canceledBy2_,  char letter_);
+    CElement(ElementID id_ , ElementID canceledBy_ , ElementID canceledBy2_,  char letter_);
 
 	/*
 	@return first opposite element.
@@ -64,8 +56,8 @@ public:
 	{
 		return id;
 	}
-	inline char GetLetter() const
-	{
+    inline char GetLetter() const
+    {
 		return letter;
 	}
 
@@ -76,8 +68,8 @@ public:
 	}
 
 	inline bool isNull() const
-	{
-	   return id == NULL_ELEM;
+    {
+	   return id == ElementID::Null;
 	}
 
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
@@ -97,12 +89,12 @@ public:
 	static CElement &GetCElementByID(ElementID id);
 private:
 	//don't copy elements
-	CElement () {};
+    CElement () {}
 	
 	ElementID cancelledBy;
 	ElementID cancelledBy2;
 	ElementID id;
-	char letter;
+    char letter;
 };
 
 extern CElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;

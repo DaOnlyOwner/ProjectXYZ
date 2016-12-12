@@ -19,13 +19,13 @@ ARockSpell::~ARockSpell()
 
 }
 
-void ARockSpell::StartBehavior(APlayerCharacter& player)
+void ARockSpell::StartBehaviorLowLevel()
 {
-	SetActorLocation(player.GetActorLocation() + player.GetActorForwardVector() * 100,false,(FHitResult*)nullptr,ETeleportType::TeleportPhysics);
-	movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, player.GetActorForwardVector());
+    SetActorLocation(originPlayer->GetActorLocation() + originPlayer->GetActorForwardVector() * 100,false,(FHitResult*)nullptr,ETeleportType::TeleportPhysics);
+    movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, originPlayer->GetActorForwardVector());
 }
 
-void ARockSpell::EndBehavior()
+void ARockSpell::EndBehaviorLowLevel()
 {
 	
 }

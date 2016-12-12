@@ -21,15 +21,15 @@ void AAoESpell::BeginPlay()
 	Super::BeginPlay();
 
 }
-void AAoESpell::StartBehavior(APlayerCharacter & player)
+void AAoESpell::StartBehaviorLowLevel()
 {
-	SetActorLocation(player.GetActorLocation());
-	int scale = spellElements.Num() * 2 ;
+    SetActorLocation(originPlayer->GetActorLocation());
+    int scale = damageInformation.Elements.Num() * 2 ;
 	SetActorRelativeScale3D(FVector(scale, scale, 0.1f));
-	GetWorldTimerManager().SetTimer(timerHandler, this, &AAoESpell::EndBehavior, 0.5f, 0);
+	GetWorldTimerManager().SetTimer(timerHandler, this, &AAoESpell::EndBehaviorLowLevel, 0.5f, 0);
 
 }
-void AAoESpell::EndBehavior()
+void AAoESpell::EndBehaviorLowLevel()
 {
 	Destroy();
 
@@ -39,11 +39,11 @@ void AAoESpell::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	if (OtherActor->IsA(APlayerCharacter::StaticClass()) && OtherActor != this)
 	{
 		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.0f, FColor::Red, "OVERLAP", true);
-		if (spellElements.Contains(WATER_ELEM))
+        if (damageInformation.Elements.Contains(ElementID::Water))
 		{
 			//make OtherActor wet or remove burn
 
-			if (!spellElements.Contains(STEAM_ELEM))
+            if (!damageInformation.Elements.Contains(ElementID::Steam))
 			{
 				// push otherActor
 
@@ -56,9 +56,9 @@ void AAoESpell::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 				//it's a STEAM+WATER AOE
 			}
 		}
-		else if (spellElements.Contains(FIRE_ELEM))
+        else if (damageInformation.Elements.Contains(ElementID::Fire))
 		{
-			if (!spellElements.Contains(STEAM_ELEM))
+            if (!damageInformation.Elements.Contains(ElementID::Steam))
 			{
 				//make OtherActor burn or remove wet
 			}

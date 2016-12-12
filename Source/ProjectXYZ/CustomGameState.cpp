@@ -5,9 +5,9 @@
 #include "PlayerCharacter.h"
 
 // I might replace that with a better working solution. Right now its just too ugly
-ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
+ASpell * ACustomGameState::genSpell(TArray<ElementID> &queue, bool selfcast)
 {
-	FString string = "GENSPELL: ";
+	/*FString string = "GENSPELL: ";
 	for (int i = 0; i < queue.Num(); i++)
 		string += CElement::GetCElementByID((ElementID)queue[i]).GetLetter();
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
@@ -45,16 +45,18 @@ ASpell * ACustomGameState::genSpell(TArray<uint8> &queue, bool selfcast)
 	{
 		lookupstring += SHIELD_CHAR; 
 		if (queue.Num() > 1)
-			lookupstring += CElement::GetCElementByID((ElementID)queue[1]).GetLetter();
+            lookupstring += CElement::GetCElementByID(queue[1]).GetLetter();
 	}
 	else
-	   lookupstring.AppendChar(CElement::GetCElementByID((ElementID)queue[0]).GetLetter());
+       lookupstring.AppendChar(CElement::GetCElementByID(queue[0]).GetLetter());
 
 	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
-	
-	if(spell)
-	   spell->SetSpellElements(queue);
 
-	return spell;
+
+	if(spell)
+       spell->SetInitialValues(queue,nullptr);
+
+	return spell;*/
+	return nullptr;
 }
 

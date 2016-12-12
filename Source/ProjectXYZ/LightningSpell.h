@@ -24,7 +24,7 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void StartBehavior(APlayerCharacter& playerCharacter) override;
+    void StartBehaviorLowLevel() override;
 
 private:
 	void bounce(AActor* actor, int bounce);
@@ -33,6 +33,7 @@ private:
 	TArray<AActor*> lightningChain;
 	FTimerHandle lightningHandle;
 	int tickAmount = 0;
+	//APlayerCharacter playerCharacter;
 	
 
 

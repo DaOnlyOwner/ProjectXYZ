@@ -61,6 +61,9 @@ DerivedDataCache/*
 # StarterContent
 Content/StarterContent/*
 
+#Publish folder
+Content/Publish/*
+
 # ipch (precompiled headers)
 ipch/*
 

@@ -37,8 +37,8 @@ public:
 		KeysNormal.Empty();
 		ValuesNormal.Empty();
 
-	};
-	ASpell * genSpell(TArray<uint8> &queue, bool selfcast);
+    }
+    ASpell * genSpell(TArray<ElementID> &queue, bool selfcast);
 
 	UPROPERTY(EditAnywhere)
 		TArray<FString> KeysNormal;

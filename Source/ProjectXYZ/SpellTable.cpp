@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#pragma once
-
-#include "Engine.h"
-#define DamageAble GameTraceChannel_1
+#include "ProjectXYZ.h"
+#include "SpellTable.h"
+#include "Spell.h"
