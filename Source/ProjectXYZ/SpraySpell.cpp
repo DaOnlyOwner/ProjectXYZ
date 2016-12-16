@@ -5,7 +5,7 @@
 
 void ASpraySpell::queryDamage()
 {
-	FString contextString(TEXT("Default"));
+	static const FString contextString(TEXT("Default"));
     UDataTable* damageValues = static_cast<USpellTable*>(database)->DamageTable;
 	FDamageTable * row;
 
