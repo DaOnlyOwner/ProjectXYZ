@@ -3,4 +3,4 @@
 #pragma once
 
 #include "Engine.h"
-#define DamageAble GameTraceChannel_1
+#define DamageAble ECC_GameTraceChannel1
