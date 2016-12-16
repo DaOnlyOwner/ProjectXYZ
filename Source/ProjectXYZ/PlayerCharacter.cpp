@@ -94,14 +94,15 @@ void APlayerCharacter::ReleaseSpellForward()
     FString lookupstring = "";
 
     //Replace
-    int32 waterIndex = elementQueue.Find(ElementID::Water);
+    /*int32 waterIndex = elementQueue.Find(ElementID::Water);
     if (waterIndex != INDEX_NONE)
     {
         int32 fireIndex = elementQueue.Find(ElementID::Fire);
         if (fireIndex != INDEX_NONE)
         {
+                        elementQueue.Remove
             elementQueue.RemoveAtSwap(fireIndex);
-            elementQueue.RemoveAtSwap(waterIndex);
+            elementQueue.RemoveAtSwap(waterIndex); // This is wrong for some spells (index is not the same anymore)
             elementQueue.Add(ElementID::Steam);
         }
 
@@ -115,9 +116,23 @@ void APlayerCharacter::ReleaseSpellForward()
                 elementQueue.Add(ElementID::Ice);
             }
         }
-    }
+    }*/
 
-	
+        if (elementQueue.Contains(ElementID::Water) && elementQueue.Contains(ElementID::Fire))
+        {
+                elementQueue.RemoveSingle(ElementID::Water);
+                elementQueue.RemoveSingle(ElementID::Fire);
+                elementQueue.Add(ElementID::Steam);
+        }
+
+        if (elementQueue.Contains(ElementID::Cold) && elementQueue.Contains(ElementID::Water))
+        {
+                elementQueue.RemoveSingle(ElementID::Cold);
+                elementQueue.RemoveSingle(ElementID::Water);
+                elementQueue.Add(ElementID::Ice);
+        }
+
+
 
     elementQueue.Sort();
     if(!(elementQueue[0] == ElementID::Fire || elementQueue[0] == ElementID::Steam || elementQueue[0] == ElementID::Water || elementQueue[0] == ElementID::Cold)) return; // Testing...
@@ -130,13 +145,13 @@ void APlayerCharacter::ReleaseSpellForward()
     else
        lookupstring.AppendChar(CElement::GetCElementByID(elementQueue[0]).GetLetter());
 
-    debugScreen(lookupstring, 10.0f);
     currentSpell = static_cast<ASpell*>(GetWorld()->SpawnActor(static_cast<USpellTable*>(database)->Spells[lookupstring]));
     currentSpell->SetInitialValues(elementQueue,this);
-	currentSpell->StartBehaviorLowLevel();
+        currentSpell->StartBehaviorLowLevel();
 
     elementQueue.Empty();
 }
+
 
 //void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 //{
