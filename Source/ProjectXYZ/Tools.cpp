@@ -23,7 +23,6 @@ bool UTools::OverlapCone(AActor* causer,
 	//params.TraceTag = "OverlapCone";
 	bool hit = causer->GetWorld()->OverlapMultiByChannel(results, causer->GetActorLocation(), causer->GetActorRotation().Add(0,0,0).Quaternion(), channel, FCollisionShape::MakeBox(FVector{ length,length,length }), params);
 	if (!hit) return false;
-	
 	for (int i = 0; i < results.Num(); i++)
 	{
 		FOverlapResult& result = results[i];

@@ -13,6 +13,12 @@ class PROJECTXYZ_API ABeamSpell : public ASpell
 {
 	GENERATED_BODY()
 	
+public:
+	ABeamSpell()
+	{
+		this->PrimaryActorTick.bCanEverTick = true;
+	}
+
 protected:
 	UFUNCTION(BlueprintCallable, Category = Damage)
 		/*Use this if you want to retrieve the points where the beam reflects, ends etc.

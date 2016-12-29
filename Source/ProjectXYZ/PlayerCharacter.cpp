@@ -135,8 +135,8 @@ void APlayerCharacter::ReleaseSpellForward()
 
 
     elementQueue.Sort();
-    if(!(elementQueue[0] == ElementID::Fire || elementQueue[0] == ElementID::Steam || elementQueue[0] == ElementID::Water || elementQueue[0] == ElementID::Cold)) return; // Testing...
-    if (elementQueue[0] == ElementID::Shield)
+    if(!(elementQueue[0] == ElementID::Fire || elementQueue[0] == ElementID::Steam || elementQueue[0] == ElementID::Water || elementQueue[0] == ElementID::Cold || elementQueue[0] == ElementID::Death || elementQueue[0] == ElementID::Life)) return; // Testing...
+	if (elementQueue[0] == ElementID::Shield)
     {
         lookupstring += SHIELD_CHAR;
         if (elementQueue.Num() > 1)
@@ -146,6 +146,10 @@ void APlayerCharacter::ReleaseSpellForward()
        lookupstring.AppendChar(CElement::GetCElementByID(elementQueue[0]).GetLetter());
 
     currentSpell = static_cast<ASpell*>(GetWorld()->SpawnActor(static_cast<USpellTable*>(database)->Spells[lookupstring]));
+	if (currentSpell == nullptr) {
+		debugScreen("Current Spell was nullptr; Did you forget to assign the value in SpellData?", 10.0f); 
+		return;
+	}
     currentSpell->SetInitialValues(elementQueue,this);
         currentSpell->StartBehaviorLowLevel();
 

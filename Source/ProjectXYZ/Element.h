@@ -87,6 +87,7 @@ public:
 	~CElement();
 
 	static CElement &GetCElementByID(ElementID id);
+	static FString GetFStringByID(ElementID id);
 private:
 	//don't copy elements
     CElement () {}

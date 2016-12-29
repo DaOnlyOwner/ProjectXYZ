@@ -48,6 +48,7 @@ class PROJECTXYZ_API ASpell : public AActor
 	GENERATED_BODY()
 	
 public:	
+
     void SetInitialValues(const TArray<ElementID> &queue, const APlayerCharacter* player_)
     {
         damageInformation.Elements = queue;

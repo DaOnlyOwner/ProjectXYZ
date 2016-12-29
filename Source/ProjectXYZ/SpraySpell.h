@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Tools.h"
 #include "GameFramework/Actor.h"
 #include "Spell.h"
 #include "SpraySpell.generated.h"
@@ -12,10 +13,28 @@ class PROJECTXYZ_API ASpraySpell : public ASpell
 {
 	GENERATED_BODY()
 
-protected:
-	void queryDamage();
-	void StartBehaviorLowLevel()
+public:
+	ASpraySpell()
 	{
-		queryDamage();
+		PrimaryActorTick.bCanEverTick = true;
 	}
+protected:
+
+	float interval = 1;
+	bool isWaterSpray = false;
+	FTimerHandle timerHandle;
+
+	UPROPERTY(EditAnywhere)
+		float openingAngle = 30.0f;
+	UPROPERTY(EditAnywhere)
+		float pushFactor;
+	void queryDamage();
+	void StartBehaviorLowLevel() override;
+	void DamageTick();
+	void Tick(float deltaTime) override;
+	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+private:
+	UParticleSystemComponent* systemComponent;
+	TArray<AActor*> cachedHitResults;
+
 };

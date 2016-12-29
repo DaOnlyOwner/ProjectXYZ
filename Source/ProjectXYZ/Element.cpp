@@ -31,3 +31,9 @@ CElement &CElement::GetCElementByID(ElementID element_id)
 	static CElement table[11] = { shield,earth,lightning,ice,death,life,steam,cold,fire,water,nullElement };
 	return table[(uint8)element_id];
 }
+
+FString CElement::GetFStringByID(ElementID id)
+{
+	static FString table[11] = { FString() + SHIELD_CHAR,FString() + EARTH_CHAR,FString() + LIGHTNING_CHAR,FString() + ICE_CHAR,FString() + DEATH_CHAR,FString() + LIFE_CHAR,FString() + STEAM_CHAR,FString() + COLD_CHAR,FString() + FIRE_CHAR,FString() + WATER_CHAR,FString() + NULL_CHAR};
+	return table[(uint8)id];
+}

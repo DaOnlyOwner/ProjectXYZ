@@ -1,9 +1,3 @@
-#Ignore everything except some folders:
-
-Content/*
-!Content/Blueprints
-
-
 # Compiled Object files
 *.slo
 *.lo

@@ -22,5 +22,8 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 		UDataTable* DamageTable;
+	
+	UPROPERTY(EditAnywhere)
+		TMap<FString, UParticleSystem*> ParticleSystems;
 
 };
