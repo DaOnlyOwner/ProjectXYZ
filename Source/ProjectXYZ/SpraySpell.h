@@ -22,7 +22,6 @@ protected:
 
 	float interval = 1;
 	bool isWaterSpray = false;
-	FTimerHandle timerHandle;
 
 	UPROPERTY(EditAnywhere)
 		float openingAngle = 30.0f;

@@ -12,7 +12,7 @@
 struct SpellToCaster
 {
 	const UClass* Spellclass; // The referenced object will remain until the end of the game. 
-	CElement additionalElements[2];
+	UElement additionalElements[2];
 	const int index = 0;
 };
 

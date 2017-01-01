@@ -1,13 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #pragma once
 
 #include "ProjectXYZ.h"
 
-/*
-Class defining the elements.
-*/
+/*Defining elements*/
 
 #define STEAM_CHAR 'T'
 #define ICE_CHAR 'I'
@@ -22,17 +19,18 @@ Class defining the elements.
 #define NULL_CHAR ' '
 #define SELFCAST_CHAR '!'
 
+
 UENUM(BlueprintType)
 enum class ElementID : uint8
 {
-	Shield, Earth, Lightning, Ice, Death, Life, Steam, Cold, Fire, Water, Null
+	Shield, Earth, Lightning, Ice, Death, Life, Steam, Cold, Fire, Water, NullElement
 };
 
-class PROJECTXYZ_API CElement
+class PROJECTXYZ_API UElement
 {
 
 public:
-    CElement(ElementID id_ , ElementID canceledBy_ , ElementID canceledBy2_,  char letter_);
+    UElement(ElementID id_ , ElementID canceledBy_ , ElementID canceledBy2_,  char letter_);
 
 	/*
 	@return first opposite element.
@@ -61,7 +59,7 @@ public:
 		return letter;
 	}
 
-	inline bool Cancels(CElement &el) const
+	inline bool Cancels(UElement &el) const
 	{
 	   return id == el.GetCancelledBy() ||
 	     id == el.GetCancelledBy2();
@@ -69,28 +67,28 @@ public:
 
 	inline bool isNull() const
     {
-	   return id == ElementID::Null;
+	   return id == ElementID::NullElement;
 	}
 
 	// --------------------- END ACCESSORS FOR ELEMENTS ---------------------
 
-	inline bool operator==(CElement &el) const 
+	inline bool operator==(UElement &el) const 
 	{
 	   return id == el.GetID();
 	}
 
-	inline bool operator<(const CElement& other) const
+	inline bool operator<(const UElement& other) const
 	{
 	   return id < other.GetID();
 	}
 
-	~CElement();
+	~UElement();
 
-	static CElement &GetCElementByID(ElementID id);
+	static UElement &GetCElementByID(ElementID id);
 	static FString GetFStringByID(ElementID id);
 private:
 	//don't copy elements
-    CElement () {}
+    UElement () {}
 	
 	ElementID cancelledBy;
 	ElementID cancelledBy2;
@@ -98,4 +96,4 @@ private:
     char letter;
 };
 
-extern CElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;
+extern UElement nullElement, steam, ice, water, fire, cold, life, death, lightning, earth, shield;

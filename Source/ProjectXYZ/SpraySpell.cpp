@@ -40,7 +40,7 @@ void ASpraySpell::StartBehaviorLowLevel()
 {
 	queryDamage();	// Retrieve the damage
 	USpellTable* database_ = static_cast<USpellTable*>(database);	// Retrieve the particle system for the spell; It's different for every spell, so I don't refractor into a function
-	UParticleSystem* PStemplate = database_->ParticleSystems[CElement::GetFStringByID(damageInformation.Elements[0])];
+	UParticleSystem* PStemplate = database_->ParticleSystems[UElement::GetFStringByID(damageInformation.Elements[0])];
 	systemComponent = UGameplayStatics::SpawnEmitterAttached(PStemplate, RootComponent, NAME_None, ((FVector)(ForceInit)), FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 	GetWorldTimerManager().SetTimer(timerHandle, this, &ASpraySpell::DamageTick, interval, true);	// Set a timer; main logic inside the DamageTick function.
 	isWaterSpray = (damageInformation.Elements[0] == ElementID::Water);	// If its a waterspray, turn on ticking;

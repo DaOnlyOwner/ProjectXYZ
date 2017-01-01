@@ -46,7 +46,7 @@ void APlayerCharacter::moveCamera(float DeltaTime)
     }
 }
 
-void APlayerCharacter::AddElementToQueue(CElement & newElement)
+void APlayerCharacter::AddElementToQueue(UElement & newElement)
 {
     if(!elementQueue.RemoveSingle(newElement.GetCancelledBy()) &&
         !elementQueue.RemoveSingle(newElement.GetCancelledBy2()) &&
@@ -55,7 +55,7 @@ void APlayerCharacter::AddElementToQueue(CElement & newElement)
 
     FString string = "My Queue: ";
     for (int i = 0; i < elementQueue.Num(); i++)
-        string += CElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
+        string += UElement::GetCElementByID((ElementID)elementQueue[i]).GetLetter();
     GEngine->AddOnScreenDebugMessage(13, 5.0f, FColor::Red, string);
 }
 
@@ -140,10 +140,10 @@ void APlayerCharacter::ReleaseSpellForward()
     {
         lookupstring += SHIELD_CHAR;
         if (elementQueue.Num() > 1)
-            lookupstring += CElement::GetCElementByID(elementQueue[1]).GetLetter();
+            lookupstring += UElement::GetCElementByID(elementQueue[1]).GetLetter();
     }
     else
-       lookupstring.AppendChar(CElement::GetCElementByID(elementQueue[0]).GetLetter());
+       lookupstring.AppendChar(UElement::GetCElementByID(elementQueue[0]).GetLetter());
 
     currentSpell = static_cast<ASpell*>(GetWorld()->SpawnActor(static_cast<USpellTable*>(database)->Spells[lookupstring]));
 	if (currentSpell == nullptr) {

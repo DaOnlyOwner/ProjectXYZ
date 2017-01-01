@@ -3,6 +3,16 @@
 #include "ProjectXYZ.h"
 #include "Spell.h"
 
+
+void ASpell::queryDamage(const FName& name)
+{
+	FString contextString(TEXT("Default"));
+	USpellTable* database_ = static_cast<USpellTable*>(database);
+	UDataTable* damageValues = database_->DamageTable;
+	FDamageTable * row = damageValues->FindRow<FDamageTable>(name, contextString, true);
+	assignDamageValues(row);
+}
+
 void ASpell::assignDamageValues(FDamageTable * row)
 {
 	for (int i = 0; i < damageInformation.Elements.Num(); i++)

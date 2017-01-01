@@ -68,7 +68,7 @@ public:
 	void ReleaseSpellSelfNet_Implementation(const TArray<uint8> &elementQueue);
 	bool ReleaseSpellSelfNet_Validate(const TArray<uint8> &elementQueue);
 */
-	void AddElementToQueue(CElement &e);
+	void AddElementToQueue(UElement &e);
 	void DisposeSpellRef();
     //int QueueToSpellType(TArray<uint8> elementQueue);
 	// Called when the game starts or when spawned

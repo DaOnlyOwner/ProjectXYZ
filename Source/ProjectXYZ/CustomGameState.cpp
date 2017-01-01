@@ -9,7 +9,7 @@ ASpell * ACustomGameState::genSpell(TArray<ElementID> &queue, bool selfcast)
 {
 	/*FString string = "GENSPELL: ";
 	for (int i = 0; i < queue.Num(); i++)
-		string += CElement::GetCElementByID((ElementID)queue[i]).GetLetter();
+		string += UElement::GetCElementByID((ElementID)queue[i]).GetLetter();
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, string, true);
 
 	ASpell * spell;
@@ -45,10 +45,10 @@ ASpell * ACustomGameState::genSpell(TArray<ElementID> &queue, bool selfcast)
 	{
 		lookupstring += SHIELD_CHAR; 
 		if (queue.Num() > 1)
-            lookupstring += CElement::GetCElementByID(queue[1]).GetLetter();
+            lookupstring += UElement::GetCElementByID(queue[1]).GetLetter();
 	}
 	else
-       lookupstring.AppendChar(CElement::GetCElementByID(queue[0]).GetLetter());
+       lookupstring.AppendChar(UElement::GetCElementByID(queue[0]).GetLetter());
 
 	spell = static_cast<ASpell*>(GetWorld()->SpawnActor(spellClassDict[lookupstring]));
 

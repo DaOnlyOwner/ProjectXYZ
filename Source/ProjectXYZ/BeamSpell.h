@@ -3,21 +3,20 @@
 #pragma once
 
 #include "Spell.h"
+#include "BeamPart.h"
+#include "DamageAble.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "BeamSpell.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTXYZ_API ABeamSpell : public ASpell
 {
 	GENERATED_BODY()
 	
 public:
-	ABeamSpell()
-	{
-		this->PrimaryActorTick.bCanEverTick = true;
-	}
+	ABeamSpell();
+	void StartBehaviorLowLevel() override;
+	void EndBehaviorLowLevel() override;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = Damage)
@@ -28,6 +27,25 @@ protected:
 		@return - The actor that was hit, if no actor was hit, a nullptr is returned, so you ALWAYS need to check if this actor is valid*/
 		AActor* calculateBeamPoints(TArray<FVector>& hitpoints, float maxBounces, float maxDistance);
 	
-	
-	
+	void Tick(float deltaTime);
+	UPROPERTY(EditAnywhere)
+		float Interval = 1;
+	UPROPERTY(EditAnywhere)
+		float MaxDistance = 10000;
+	UPROPERTY(EditAnywhere)
+		int MaxBounces = 3;
+
+	void DamageTick();
+
+private:
+	TArray<ABeamPart*> beamParts;
+	UParticleSystemComponent* hitEffectComponent;
+
+	AActor* hitActor;
+	UParticleSystem* spawnTemplate;
+	UParticleSystem* reflectorTemplate;
+	void resizeBeamPartArray(int newSize);
+	void turnOnHitEffect(const FVector& location, const FRotator& rotation);
+	void turnOffHitEffect();
+	bool systemActive = false;
 };

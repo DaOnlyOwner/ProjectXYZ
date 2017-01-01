@@ -8,6 +8,8 @@
 #include "SpellTable.h"
 #include "Spell.generated.h"
 
+#define GET_CASTED_DATABASE() static_cast<USpellTable*>(database)
+
 UENUM(BlueprintType)
 enum class SpellType : uint8
 {
@@ -71,6 +73,7 @@ protected:
     FDamageInformation damageInformation;
 	UPROPERTY(BlueprintReadWrite)
     TWeakObjectPtr<APlayerCharacter> originPlayer;
-	
+	void queryDamage(const FName& name); 
 	void assignDamageValues(FDamageTable* row);
+	FTimerHandle timerHandle;
 };
