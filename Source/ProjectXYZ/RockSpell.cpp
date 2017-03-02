@@ -19,7 +19,7 @@ ARockSpell::~ARockSpell()
 
 }
 
-void ARockSpell::StartBehavior(const APlayerCharacter& player)
+void ARockSpell::StartBehavior(APlayerCharacter& player)
 {
 	SetActorLocation(player.GetActorLocation() + player.GetActorForwardVector() * 100,false,(FHitResult*)nullptr,ETeleportType::TeleportPhysics);
 	movementComponent->InitializeAndStart(MaxRockDistance, chargedTime, player.GetActorForwardVector());

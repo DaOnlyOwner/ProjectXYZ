@@ -124,6 +124,7 @@ void APlayerCharacterController::TurnToWaypoint(float deltaTime)
 	GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, result);
 	FRotator rotator = UKismetMathLibrary::FindLookAtRotation(actor->GetActorLocation(), result.ImpactPoint);
 	rotator = FMath::RInterpTo(actor->GetActorRotation(), rotator, deltaTime, TurnSpeed);
+	//actor->AddActorWorldRotation(FRotator(actor->GetActorRotation().Pitch, rotator.Yaw, actor->GetActorRotation().Roll));
 	SetControlRotation(rotator);
 }
 

@@ -45,7 +45,6 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 	DOREPLIFETIME(APlayerCharacter, currentSpell);
 	DOREPLIFETIME(APlayerCharacter, State);
 	DOREPLIFETIME(APlayerCharacter, wards);
-	DOREPLIFETIME(APlayerCharacter, health);
 }
 
 // Called every frame
@@ -97,6 +96,7 @@ void APlayerCharacter::ReleaseSpellForward()
 		return;
 	ReleaseSpellForwardNet(elementQueue);
 }
+
 
 /* ROLE_authority */
 void APlayerCharacter::ReleaseSpellForwardNet_Implementation(const TArray<uint8> & elemQueue)
@@ -270,51 +270,6 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputCom
 	Super::SetupPlayerInputComponent(InputComponent);
 }
 
-float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
-{
-	if (!HasAuthority()) return 0;
-	ASpell* spell;
-	if ( (spell = Cast<ASpell>(DamageCauser)) != nullptr)
-	{
-		// DamageCauser is a spell;
-		FDamageInformation damage = spell->CalcDamageBasedOnWards(wards, Status); // We have to compute it here because of additional information needed (wards etc.)
-		Status = damage.computedStatus;
-		health -= damage.computedDamage;
-		if (health <= 0)
-		{
-			KillActor(damage.spellType);
-		}
-
-		return damage.computedDamage;
-	}
-
-	else
-	{
-
-
-		// DamageCauser is self - caused by burning
-		int fireWardAmount = 0;
-		for (int i = 0; i < 2; i++)
-		{
-			if (wards[i] == ElementID::FIRE_ELEM)
-			{
-				fireWardAmount++;
-			}
-		}
-
-		if(fireWardAmount > 0)
-			DamageAmount = fireWardAmount == 1 ? DamageAmount * 0.5f : 0;
-
-		return DamageAmount;
-	}
-}
-
-void APlayerCharacter::KillActor(Spelltype spellType)
-{
-	if (!HasAuthority()) return;
-	// Spawn animations, particles etc. for death based on the spellType (for example Charged will smash the player to pieces)
-}
-
 void APlayerCharacter::moveCamera(float DeltaTime)
 {
 	int x;
@@ -348,19 +303,6 @@ void APlayerCharacter::onCurrentSpellChange()
 	/*GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Red, "current spell changed", true);*/
 }
 
-void APlayerCharacter::onWardChange()
-{
-	/*FString print = "";
-	print += "Wards Changed for " + this->GetHumanReadableName();
-	print += "Ward1: " + (wards.Num() > 0 ? FString::SanitizeFloat(wards[0]) : TEXT("Null"));
-	print += "Ward2: " + (wards.Num() > 1 ? FString::SanitizeFloat(wards[1]) : TEXT("Null"));
-	PRINTSCR(print);*/
-}
-
-void APlayerCharacter::onHealthChanged()
-{
-	
-}
 
 
 

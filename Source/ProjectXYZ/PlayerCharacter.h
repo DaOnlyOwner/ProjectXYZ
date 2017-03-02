@@ -7,6 +7,9 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+#define debug(string,arguments) UE_LOG(LogTemp, Warning, TEXT(string), arguments);
+#define debugScreen(string, time) GEngine->AddOnScreenDebugMessage(INDEX_NONE, time, FColor::Red, string, true);
+
 class ASpell;
 
 UENUM()
@@ -64,8 +67,6 @@ public:
 	void ReleaseSpellSelfNet_Implementation(const TArray<uint8> &elementQueue);
 	bool ReleaseSpellSelfNet_Validate(const TArray<uint8> &elementQueue);
 
-	//Executed only on the server
-	void KillActor(enum Spelltype spelltype);
 	void AddElementToQueue(CElement &e);
 	int QueueToSpellType(TArray<uint8> elementQueue);
 	// Called when the game starts or when spawned
@@ -77,9 +78,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-
-	//Garuanteed to be executed only on the server
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
 
 	UPROPERTY(EditAnywhere)
 		USceneComponent* camera;
@@ -95,9 +93,10 @@ public:
 
 	UPROPERTY(Replicated)
 		int Status = NORMAL;
-
+	
 	UFUNCTION()
 		void setStateToReady();
+
 
 
 
@@ -108,15 +107,10 @@ public:
 	UFUNCTION()
 		void onCurrentSpellChange();
 
-	UFUNCTION()
-		void onWardChange();
-	UFUNCTION()
-		void onHealthChanged();
-
-
 private:
 
-	UPROPERTY(Replicated, ReplicatedUsing = onWardChange)
+
+	UPROPERTY(Replicated)
 		TArray<uint8> wards;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onElementQueueChange)
@@ -125,11 +119,7 @@ private:
 		TArray<uint8> serverSideElementQueue;
 
 	UPROPERTY(Replicated, ReplicatedUsing = onCurrentSpellChange)
-		ASpell* currentSpell;
-
-	UPROPERTY(Replicated, ReplicatedUsing = onHealthChanged) // update healthbar etc.
-		float health;
-	
+		ASpell* currentSpell;	
 	FVector startOffset;
 
 	FTimerHandle timerHandler;

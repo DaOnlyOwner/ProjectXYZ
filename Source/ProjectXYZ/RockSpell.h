@@ -26,10 +26,11 @@ public:
 
 	ARockSpell();
 	~ARockSpell();
-	void StartBehavior(const APlayerCharacter& player) override;
+	void StartBehavior(APlayerCharacter& player) override;
 	void EndBehavior() override;
 
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	
 private:

@@ -19,7 +19,7 @@ void AStormSpell::BeginPlay()
 
 }
 
-void AStormSpell::StartBehavior(const APlayerCharacter & player)
+void AStormSpell::StartBehavior(APlayerCharacter & player)
 {
 
 	FActorSpawnParameters SpawnInfo;
